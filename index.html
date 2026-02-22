@@ -1,1375 +1,894 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reading Adventure - Vocabulary & Comprehension</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Comic Sans MS", Arial, sans-serif;
-      background: linear-gradient(135deg, #a5dee5 0, #ffc8c8 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container { max-width: 1000px; margin: 0 auto; }
-
-    .header { 
-      text-align: center; 
-      color: #2d3436; 
-      margin-bottom: 15px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .header h1 {
-      font-size: 2.8em;
-      margin-bottom: 10px;
-      color: #0984e3;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }
-    .header p { 
-      font-size: 1.3em; 
-      color: #2d3436;
-      margin-bottom: 10px;
-    }
-    .header .subtitle {
-      font-size: 1.1em;
-      color: #636e72;
-      font-style: italic;
-    }
-
-    /* Progress controls - ALWAYS VISIBLE */
-    .progress-controls {
-      text-align: center;
-      margin-bottom: 20px;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 15px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border: 3px solid #74b9ff;
-    }
-    .progress-controls .btn {
-      margin: 5px 10px;
-      font-size: 1em;
-      padding: 12px 25px;
-      border: 2px solid transparent;
-    }
-
-    .main-menu {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-bottom: 30px;
-    }
-
-    .menu-card {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      width: 300px;
-      text-align: center;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-      transition: all 0.3s;
-      cursor: pointer;
-      border: 4px solid transparent;
-    }
-    .menu-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 20px rgba(0,0,0,0.2);
-    }
-    .menu-card.vocabulary {
-      border-color: #00cec9;
-      background: linear-gradient(135deg, #ffffff 0, #e8f9f9 100%);
-    }
-    .menu-card.sequencing {
-      border-color: #fd79a8;
-      background: linear-gradient(135deg, #ffffff 0, #ffe8f0 100%);
-    }
-    .menu-card.comprehension {
-      border-color: #a29bfe;
-      background: linear-gradient(135deg, #ffffff 0, #f0eeff 100%);
-    }
-    .menu-card-icon {
-      font-size: 4em;
-      margin-bottom: 15px;
-    }
-    .menu-card h2 {
-      font-size: 1.8em;
-      margin-bottom: 15px;
-      color: #2d3436;
-    }
-    .menu-card p {
-      font-size: 1.1em;
-      color: #636e72;
-      line-height: 1.5;
-    }
-    .menu-card .level-badge {
-      display: inline-block;
-      background: #00b894;
-      color: white;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 0.9em;
-      margin-top: 15px;
-    }
-
-    /* Game Area */
-    .game-area {
-      background: #fff;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      display: none;
-      margin-bottom: 30px;
-      border: 4px solid #74b9ff;
-    }
-    .game-area.active { display: block; }
-
-    .score-board {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .score-item {
-      background: #f0f0f0;
-      padding: 15px;
-      border-radius: 12px;
-      text-align: center;
-      border: 2px solid #dfe6e9;
-    }
-    .score-label {
-      font-size: 0.9em;
-      color: #636e72;
-      margin-bottom: 5px;
-    }
-    .score-value {
-      font-size: 2em;
-      font-weight: bold;
-      color: #0984e3;
-    }
-
-    .progress-bar {
-      background: #dfe6e9;
-      height: 35px;
-      border-radius: 18px;
-      overflow: hidden;
-      margin: 25px 0;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .progress-fill {
-      background: linear-gradient(90deg, #00cec9 0, #81ecec 100%);
-      height: 100%;
-      transition: width 0.5s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1.1em;
-      width: 0%;
-    }
-
-    /* Vocabulary Game */
-    .vocab-question {
-      font-size: 1.8em;
-      color: #2d3436;
-      margin-bottom: 30px;
-      text-align: center;
-      line-height: 1.6;
-      padding: 25px;
-      background: #f9f9f9;
-      border-radius: 15px;
-      border-left: 5px solid #00cec9;
-    }
-    .vocab-word {
-      font-size: 2.5em;
-      color: #0984e3;
-      font-weight: bold;
-      display: inline-block;
-      margin: 0 10px;
-      text-decoration: underline;
-      text-decoration-color: #fd79a8;
-    }
-
-    .options-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin: 30px 0;
-    }
-    @media (max-width: 768px) {
-      .options-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .option-btn {
-      background: white;
-      border: 3px solid #74b9ff;
-      padding: 25px;
-      border-radius: 15px;
-      font-size: 1.3em;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    .option-btn:hover {
-      background: #e3f2fd;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
-    .option-btn.correct {
-      background: #55efc4;
-      border-color: #00b894;
-      color: #004d40;
-    }
-    .option-btn.incorrect {
-      background: #fab1a0;
-      border-color: #d63031;
-      color: #7f0000;
-    }
-    .option-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-    .option-letter {
-      background: #0984e3;
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-
-    /* Sequencing Game */
-    .story-context {
-      background: #fff9e6;
-      padding: 25px;
-      border-radius: 15px;
-      font-size: 1.5em;
-      line-height: 1.8;
-      color: #2d3436;
-      margin-bottom: 30px;
-      border-left: 5px solid #fdcb6e;
-    }
-    .story-context .highlight {
-      background: #ffeaa7;
-      padding: 2px 8px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    .sentence-options {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin: 30px 0;
-    }
-    .sentence-option {
-      background: white;
-      border: 3px solid #a29bfe;
-      padding: 25px;
-      border-radius: 15px;
-      font-size: 1.3em;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    .sentence-option:hover {
-      background: #f0eeff;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
-    .sentence-option .number {
-      background: #a29bfe;
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-
-    /* Comprehension Game */
-    .reading-passage {
-      background: #f0f8ff;
-      padding: 30px;
-      border-radius: 15px;
-      font-size: 1.4em;
-      line-height: 1.8;
-      color: #2d3436;
-      margin-bottom: 30px;
-      border-left: 5px solid #74b9ff;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .comprehension-question {
-      font-size: 1.6em;
-      color: #2d3436;
-      margin: 30px 0;
-      padding: 20px;
-      background: #f9f9f9;
-      border-radius: 12px;
-    }
-
-    .feedback-area {
-      text-align: center;
-      margin: 25px 0;
-      padding: 25px;
-      border-radius: 15px;
-      font-size: 1.4em;
-      font-weight: bold;
-      display: none;
-      animation: slideIn 0.5s ease-out;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .feedback-area.show { display: block; }
-    .feedback-area.correct { 
-      background: #55efc4; 
-      color: #004d40;
-      border: 3px solid #00b894;
-    }
-    .feedback-area.incorrect { 
-      background: #fab1a0; 
-      color: #7f0000;
-      border: 3px solid #d63031;
-    }
-
-    .explanation-box {
-      background: #fff3cd;
-      border: 3px solid #ffc107;
-      padding: 25px;
-      margin: 20px 0;
-      border-radius: 12px;
-      display: none;
-      text-align: left;
-      animation: slideIn 0.5s ease-out;
-    }
-    .explanation-box.show { display: block; }
-    .explanation-box h3 {
-      color: #856404;
-      margin-bottom: 15px;
-      font-size: 1.5em;
-    }
-    .explanation-box p {
-      color: #856404;
-      font-size: 1.2em;
-      line-height: 1.6;
-      margin: 10px 0;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 30px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      padding: 15px 30px;
-      font-size: 1.2em;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .btn:hover:not(.disabled) { 
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-    .btn.disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-    .btn-next { 
-      background: #00b894; 
-      color: #fff;
-      border: 2px solid #00a085;
-    }
-    .btn-hint { 
-      background: #74b9ff; 
-      color: #fff;
-      border: 2px solid #5aa1e3;
-    }
-    .btn-back { 
-      background: #6c5ce7; 
-      color: #fff;
-      border: 2px solid #5549d1;
-    }
-
-    .hint-box {
-      background: #e3f2fd;
-      padding: 25px;
-      border-radius: 12px;
-      margin: 25px 0;
-      display: none;
-      font-size: 1.3em;
-      color: #1565c0;
-      border-left: 5px solid #2196f3;
-      animation: slideIn 0.5s ease-out;
-    }
-    .hint-box.show { display: block; }
-
-    /* Completion Modal */
-    .completion-modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .completion-modal.show { display: flex; }
-    .completion-content {
-      background: #fff;
-      padding: 50px;
-      border-radius: 25px;
-      text-align: center;
-      max-width: 600px;
-      width: 90%;
-      animation: slideIn 0.5s ease-out;
-      border: 5px solid #74b9ff;
-    }
-    .completion-content h2 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-      color: #0984e3;
-    }
-    .completion-score {
-      font-size: 4em;
-      font-weight: bold;
-      margin: 20px 0;
-      color: #00b894;
-    }
-    .completion-content p {
-      font-size: 1.4em;
-      line-height: 1.8;
-      margin: 15px 0;
-      color: #2d3436;
-    }
-    .stars {
-      font-size: 3em;
-      margin: 20px 0;
-      color: #fdcb6e;
-    }
-
-    /* Level Selector */
-    .level-selector {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      margin-bottom: 30px;
-      border: 3px solid #a29bfe;
-      display: none;
-    }
-    .level-selector.active { display: block; }
-    .level-selector h2 {
-      text-align: center;
-      color: #6c5ce7;
-      margin-bottom: 25px;
-      font-size: 2em;
-    }
-    .level-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-    }
-    .level-btn {
-      position: relative;
-      background: linear-gradient(135deg, #74b9ff 0, #0984e3 100%);
-      color: #fff;
-      border: none;
-      padding: 25px;
-      border-radius: 15px;
-      font-size: 1.2em;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .level-btn:hover:not(.locked) {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-    .level-btn.completed {
-      background: linear-gradient(135deg, #00cec9 0, #00a085 100%);
-    }
-    .level-btn.locked {
-      background: #dfe6e9;
-      color: #636e72;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-    .level-badge, .lock-icon {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .level-badge {
-      background: #fff;
-      color: #00b894;
-      font-size: 1.2em;
-    }
-    .lock-icon { 
-      font-size: 1.5em;
-      color: #636e72;
-    }
-
-    @media (max-width: 768px) {
-      .header h1 { font-size: 2em; }
-      .score-board { grid-template-columns: repeat(2, 1fr); }
-      .menu-card { width: 100%; }
-      .game-area { padding: 20px; }
-      .vocab-question { font-size: 1.5em; }
-      .vocab-word { font-size: 2em; }
-      .progress-controls .btn { 
-        padding: 10px 20px; 
-        font-size: 0.9em;
-        margin: 5px;
-      }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Adventure - 2nd Grade Level</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);min-height:100vh;padding:16px}
+.wrap{max-width:720px;margin:0 auto}
+.topbar{background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,0.3);border-radius:16px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;position:sticky;top:8px;z-index:100}
+.topbar-title{font-size:1.15rem;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3)}
+.topbar-btns{display:flex;gap:8px;flex-wrap:wrap}
+.tb-btn{padding:6px 14px;border:none;border-radius:20px;font-weight:800;font-size:0.8rem;cursor:pointer;transition:transform 0.1s}
+.tb-btn:hover{transform:scale(1.05)}
+.tb-save{background:#FFD93D;color:#2D3561}
+.tb-load{background:#6BCB77;color:#fff}
+.tb-lbl{font-size:0.72rem;color:rgba(255,255,255,0.7)}
+.screen{display:none}
+.screen.active{display:block}
+.home-hero{text-align:center;padding:20px 0 14px}
+.home-hero h1{font-size:2.2rem;font-weight:900;color:#fff;text-shadow:0 3px 8px rgba(0,0,0,0.3)}
+.home-hero p{color:rgba(255,255,255,0.85);font-size:0.95rem;margin-top:6px}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:14px}
+.menu-card{background:#fff;border-radius:20px;padding:22px 16px;text-align:center;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.15);transition:transform 0.15s,box-shadow 0.15s;border:3px solid transparent}
+.menu-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.2)}
+.menu-card.vocab{border-color:#00cec9}.menu-card.seq{border-color:#fd79a8}.menu-card.comp{border-color:#a29bfe}.menu-card.spell{border-color:#fdcb6e}
+.mc-icon{font-size:2.4rem;margin-bottom:10px}
+.mc-name{font-weight:900;font-size:1rem;color:#2D3561;margin-bottom:6px}
+.mc-desc{font-size:0.78rem;color:#666;line-height:1.4}
+.mc-badge{display:inline-block;margin-top:10px;background:#6c5ce7;color:#fff;border-radius:14px;padding:3px 12px;font-size:0.72rem;font-weight:800}
+.levels-wrap{background:rgba(255,255,255,0.95);border-radius:20px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:12px}
+.levels-title{font-size:1.3rem;font-weight:900;color:#2D3561;margin-bottom:16px;text-align:center}
+.levels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.lv-btn{background:linear-gradient(135deg,#74b9ff,#0984e3);color:#fff;border:none;border-radius:14px;padding:14px 8px;cursor:pointer;text-align:center;font-weight:800;font-size:0.85rem;transition:transform 0.15s;position:relative}
+.lv-btn:hover:not(.locked){transform:translateY(-3px)}
+.lv-btn.locked{background:#dfe6e9;color:#aaa;cursor:not-allowed}
+.lv-btn.done{background:linear-gradient(135deg,#00cec9,#00a085)}
+.lv-icon{font-size:1.6rem;display:block;margin-bottom:4px}
+.lv-score{font-size:0.68rem;opacity:0.85;margin-top:3px}
+.lv-lock{position:absolute;top:6px;right:6px;font-size:1rem}
+.quiz-head{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.quiz-meta{display:flex;justify-content:space-between;font-size:0.82rem;color:#666;margin-bottom:8px}
+.quiz-score-row{display:flex;gap:14px}
+.qs-item{text-align:center;flex:1}
+.qs-label{font-size:0.7rem;color:#888}
+.qs-val{font-size:1.3rem;font-weight:900;color:#2D3561}
+.prog-bar{background:#e0e0e0;border-radius:8px;height:10px;margin-top:8px}
+.prog-fill{height:100%;border-radius:8px;transition:width 0.4s;background:linear-gradient(90deg,#00cec9,#6c5ce7)}
+.q-card{background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 24px rgba(0,0,0,0.1);margin-bottom:12px;border-top:5px solid #6c5ce7;position:relative;overflow:hidden}
+.q-type-badge{display:inline-block;background:#6c5ce7;color:#fff;border-radius:14px;padding:3px 12px;font-size:0.72rem;font-weight:800;margin-bottom:10px}
+.q-text{font-size:1.05rem;font-weight:700;color:#2D3561;line-height:1.55;margin-bottom:6px}
+.q-passage{background:#f0f8ff;border-left:4px solid #74b9ff;border-radius:8px;padding:12px 14px;font-size:0.92rem;color:#2D3561;line-height:1.65;margin-bottom:12px;max-height:180px;overflow-y:auto}
+.q-word{font-size:2rem;font-weight:900;color:#0984e3;text-align:center;margin:10px 0;text-decoration:underline;text-decoration-color:#fd79a8}
+.q-story{background:#fff9e6;border-left:4px solid #fdcb6e;border-radius:8px;padding:12px 14px;font-size:1rem;color:#2D3561;line-height:1.6;margin-bottom:12px}
+.options{display:grid;gap:10px;margin-top:10px}
+.options.two-col{grid-template-columns:1fr 1fr}
+.opt-btn{background:#fff;border:2px solid #b0b8d0;border-radius:12px;padding:14px 16px;font-size:0.95rem;font-weight:600;color:#2D3561;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:all 0.15s;width:100%}
+.opt-btn:hover:not(:disabled){border-color:#6c5ce7;background:#f0eeff;transform:translateX(3px)}
+.opt-btn:disabled{cursor:not-allowed;opacity:0.75}
+.opt-btn.correct{background:#d4edda;border-color:#6BCB77;color:#155724}
+.opt-btn.wrong{background:#f8d7da;border-color:#FC5C65;color:#721c24}
+.opt-letter{width:32px;height:32px;border-radius:50%;background:#6c5ce7;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;flex-shrink:0}
+.opt-btn.correct .opt-letter{background:#6BCB77}
+.opt-btn.wrong .opt-letter{background:#FC5C65}
+.spell-hint-img{font-size:3.5rem;display:block;text-align:center;margin:8px 0}
+.spell-blanks{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.spell-blank{width:36px;height:40px;border-bottom:3px solid #6c5ce7;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#2D3561}
+.letter-bank{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.letter-tile{width:38px;height:38px;border:2px solid #6c5ce7;border-radius:10px;background:#fff;font-size:1.1rem;font-weight:900;color:#2D3561;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.letter-tile:hover{background:#f0eeff;transform:scale(1.1)}
+.letter-tile.used{opacity:0.25;cursor:not-allowed;pointer-events:none}
+.spell-input{font-size:1.2rem;font-weight:900;color:#2D3561;text-align:center;letter-spacing:6px;padding:10px;border:2px solid #ddd;border-radius:12px;width:100%;outline:none;margin-top:8px}
+.spell-input:focus{border-color:#6c5ce7}
+.feedback{border-radius:12px;padding:12px 16px;font-weight:800;font-size:0.95rem;margin:10px 0;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:#d4edda;border:2px solid #6BCB77;color:#155724}
+.feedback.bad{background:#f8d7da;border:2px solid #FC5C65;color:#721c24}
+.explanation{background:#FFF9C4;border:2px dashed #FFD93D;border-radius:12px;padding:12px 16px;font-size:0.88rem;color:#7a5c00;font-weight:700;margin:8px 0;display:none}
+.explanation.show{display:block}
+.hint-box{background:#e3f2fd;border-left:4px solid #2196f3;border-radius:8px;padding:10px 14px;font-size:0.88rem;color:#1565c0;font-weight:700;margin:8px 0;display:none}
+.hint-box.show{display:block}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{padding:11px 18px;border:none;border-radius:12px;font-weight:900;font-size:0.9rem;cursor:pointer;transition:transform 0.1s,box-shadow 0.1s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.btn-check{background:#6c5ce7;color:#fff;flex:1}
+.btn-next{background:#00b894;color:#fff;flex:1;display:none}
+.btn-hint{background:#FFD93D;color:#2D3561}
+.btn-back{background:#e0e0e0;color:#555}
+.btn-audio{background:#fdcb6e;color:#2D3561;font-size:1.2rem;padding:8px 15px}
+.result-card{background:#fff;border-radius:20px;padding:28px;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,0.15);margin-top:12px}
+.result-emoji{font-size:4rem;margin-bottom:10px}
+.result-title{font-size:1.8rem;font-weight:900;color:#2D3561;margin-bottom:8px}
+.result-pct{font-size:3rem;font-weight:900;margin:8px 0}
+.result-stars{font-size:2rem;margin:8px 0}
+.result-msg{background:#f8f9fa;border-radius:12px;padding:14px;font-size:0.92rem;color:#555;font-weight:700;margin:12px 0;line-height:1.5}
+.mistake-section{text-align:left;margin:12px 0}
+.mistake-title{font-weight:900;color:#FC5C65;margin-bottom:8px;font-size:0.95rem}
+.mistake-item{background:#fff5f5;border:2px solid #ffcdd2;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:0.85rem}
+.mi-q{font-weight:800;color:#c62828}
+.mi-exp{color:#555;margin-top:3px}
+.mi-how{color:#888;font-size:0.8rem;margin-top:2px}
+.audio-hint{font-size:0.9rem;color:#666;margin-top:8px;cursor:pointer;padding:8px;background:#f0f0f0;border-radius:8px;display:inline-block}
+.audio-hint:hover{background:#e0e0e0}
+.progress-chart{background:#fff;border-radius:12px;padding:15px;margin-top:15px;text-align:left}
+.progress-bar-cont{background:#e0e0e0;border-radius:10px;height:20px;margin:8px 0}
+.progress-bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#00cec9,#6c5ce7);width:0%}
+@media(max-width:480px){
+  .two-col{grid-template-columns:1fr}
+  .home-hero h1{font-size:1.7rem}
+  .menu-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h1>📚 Reading Adventure</h1>
-      <p>Build vocabulary, understand stories, and improve reading skills!</p>
-      <p class="subtitle">For Grades 1-3 • Fun & Educational</p>
+<div class="wrap">
+
+<div class="topbar">
+  <div class="topbar-title">📚 Reading Adventure</div>
+  <div class="topbar-btns">
+    <button class="tb-btn tb-save" onclick="saveProgress()">💾 Save</button>
+    <button class="tb-btn tb-load" onclick="loadProgress()">📂 Load</button>
+    <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadFile(event)">
+  </div>
+  <div class="tb-lbl" id="saveLbl">No saves yet</div>
+</div>
+
+<div class="screen active" id="homeScreen">
+  <div class="home-hero">
+    <h1>📚 Reading Adventure</h1>
+    <p>Build vocabulary, reading skills, and spelling — each time you play, new challenges!</p>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card vocab" onclick="openCategory('vocab')">
+      <div class="mc-icon">🔤</div>
+      <div class="mc-name">Vocabulary</div>
+      <div class="mc-desc">Learn new words and their meanings!</div>
+      <div class="mc-badge">5 Levels</div>
     </div>
-
-    <!-- Progress controls - ALWAYS VISIBLE -->
-    <div class="progress-controls">
-      <button class="btn btn-hint" id="exportBtn">💾 Save Progress</button>
-      <button class="btn btn-next" id="importBtn">📂 Load Progress</button>
-      <input type="file" id="progressFile" accept=".json" style="display:none;" />
+    <div class="menu-card seq" onclick="openCategory('seq')">
+      <div class="mc-icon">📝</div>
+      <div class="mc-name">Sentence Sequencing</div>
+      <div class="mc-desc">What happens next in the story?</div>
+      <div class="mc-badge">5 Levels</div>
     </div>
-
-    <!-- Main Menu -->
-    <div class="main-menu" id="mainMenu">
-      <div class="menu-card vocabulary" onclick="selectGameType('vocabulary')">
-        <div class="menu-card-icon">🔤</div>
-        <h2>Vocabulary Builder</h2>
-        <p>Learn new words and their meanings. Match words with pictures and definitions!</p>
-        <div class="level-badge">Level 1-5</div>
-      </div>
-      
-      <div class="menu-card sequencing" onclick="selectGameType('sequencing')">
-        <div class="menu-card-icon">🔠</div>
-        <h2>Sentence Sequencing</h2>
-        <p>What happens next? Choose the sentence that makes the most sense in the story!</p>
-        <div class="level-badge">Level 1-5</div>
-      </div>
-      
-      <div class="menu-card comprehension" onclick="selectGameType('comprehension')">
-        <div class="menu-card-icon">📖</div>
-        <h2>Reading Comprehension</h2>
-        <p>Read short stories and answer questions to show you understand!</p>
-        <div class="level-badge">Level 1-5</div>
-      </div>
+    <div class="menu-card comp" onclick="openCategory('comp')">
+      <div class="mc-icon">📖</div>
+      <div class="mc-name">Reading Comprehension</div>
+      <div class="mc-desc">Read passages and answer questions!</div>
+      <div class="mc-badge">5 Levels</div>
     </div>
-
-    <!-- Level Selector -->
-    <div class="level-selector" id="levelSelector">
-      <h2>Select Difficulty Level</h2>
-      <div class="level-buttons" id="levelButtons"></div>
-    </div>
-
-    <!-- Game Area -->
-    <div class="game-area" id="gameArea">
-      <div class="score-board">
-        <div class="score-item">
-          <div class="score-label">Question</div>
-          <div class="score-value" id="questionNumber">1/10</div>
-        </div>
-        <div class="score-item">
-          <div class="score-label">Correct</div>
-          <div class="score-value" id="correctScore">0</div>
-        </div>
-        <div class="score-item">
-          <div class="score-label">Accuracy</div>
-          <div class="score-value" id="accuracyScore">0%</div>
-        </div>
-        <div class="score-item">
-          <div class="score-label">Game Type</div>
-          <div class="score-value" id="gameType">Vocabulary</div>
-        </div>
-      </div>
-
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill">0%</div>
-      </div>
-
-      <!-- Vocabulary Game Content -->
-      <div id="vocabularyGame" style="display:none;">
-        <div class="vocab-question" id="vocabQuestion">
-          What does <span class="vocab-word" id="targetWord">happy</span> mean?
-        </div>
-        <div class="options-container" id="vocabOptions"></div>
-      </div>
-
-      <!-- Sequencing Game Content -->
-      <div id="sequencingGame" style="display:none;">
-        <div class="story-context" id="storyContext">
-          <span class="highlight" id="contextText">Sarah woke up early in the morning. She brushed her teeth and got dressed for school.</span>
-        </div>
-        <div class="comprehension-question">
-          What should happen <strong>next</strong> in this story?
-        </div>
-        <div class="sentence-options" id="sequencingOptions"></div>
-      </div>
-
-      <!-- Comprehension Game Content -->
-      <div id="comprehensionGame" style="display:none;">
-        <div class="reading-passage" id="readingPassage"></div>
-        <div class="comprehension-question" id="comprehensionQuestion"></div>
-        <div class="options-container" id="comprehensionOptions"></div>
-      </div>
-
-      <div class="feedback-area" id="feedbackArea"></div>
-      <div class="explanation-box" id="explanationBox"></div>
-      <div class="hint-box" id="hintBox"></div>
-
-      <div class="controls">
-        <button class="btn btn-back" onclick="backToMenu()" id="backBtn">← Back to Menu</button>
-        <button class="btn btn-hint" onclick="showHint()" id="hintBtn">💡 Hint</button>
-        <button class="btn btn-next" onclick="nextQuestion()" style="display:none;" id="nextBtn">Next Question →</button>
-      </div>
-    </div>
-
-    <!-- Completion Modal -->
-    <div class="completion-modal" id="completionModal">
-      <div class="completion-content">
-        <h2 id="completionTitle">Level Complete!</h2>
-        <div class="stars" id="starsDisplay">⭐⭐⭐⭐⭐</div>
-        <div class="completion-score" id="completionScore">100%</div>
-        <p id="completionMessage">Excellent work! You've mastered this level!</p>
-        <button class="btn btn-next" onclick="closeCompletionModal()" id="completionBtn">
-          Continue
-        </button>
-      </div>
+    <div class="menu-card spell" onclick="openCategory('spell')">
+      <div class="mc-icon">✏️</div>
+      <div class="mc-name">Spelling Practice</div>
+      <div class="mc-desc">Spell words correctly to earn stars!</div>
+      <div class="mc-badge">5 Levels</div>
     </div>
   </div>
+  <div class="progress-chart" id="progressChart"></div>
+</div>
 
-  <script>
-    // Game Configuration
-    const QUESTIONS_PER_LEVEL = 10;
-    const MASTERY_THRESHOLD = 0.8; // 80% to pass
-    const STORAGE_KEY = "readingAdventureProgress_v1";
+<div class="screen" id="levelsScreen">
+  <div class="levels-wrap">
+    <div class="levels-title" id="levelsTitle">Choose a Level</div>
+    <div class="levels-grid" id="levelsGrid"></div>
+    <div style="margin-top:14px;text-align:center">
+      <button class="btn btn-back" onclick="showHome()">← Back</button>
+    </div>
+  </div>
+</div>
 
-    // Game Types
-    const GAME_TYPES = {
-      VOCABULARY: 'vocabulary',
-      SEQUENCING: 'sequencing',
-      COMPREHENSION: 'comprehension'
-    };
+<div class="screen" id="quizScreen">
+  <div class="quiz-head">
+    <div class="quiz-meta">
+      <span id="quizLabel">Vocabulary • Level 1</span>
+      <span id="quizQNum">Q 1 / 10</span>
+    </div>
+    <div class="quiz-score-row">
+      <div class="qs-item"><div class="qs-label">Correct</div><div class="qs-val" id="qsCorrect">0</div></div>
+      <div class="qs-item"><div class="qs-label">Wrong</div><div class="qs-val" id="qsWrong">0</div></div>
+      <div class="qs-item"><div class="qs-label">Accuracy</div><div class="qs-val" id="qsAcc">—</div></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  </div>
+  <div class="q-card" id="qCard"></div>
+  <div class="hint-box" id="hintBox"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="explanation" id="explanation"></div>
+  <div class="btn-row">
+    <button class="btn btn-back" onclick="leaveQuiz()">← Home</button>
+    <button class="btn btn-hint" id="hintBtn" onclick="showHint()">💡 Hint</button>
+    <button class="btn btn-audio" id="audioBtn" onclick="playAudio()" style="display:none">🔊</button>
+    <button class="btn btn-check" id="checkBtn" onclick="checkAnswer()">✅ Check</button>
+    <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">▶ Next</button>
+  </div>
+</div>
 
-    // Game Data
-    const vocabularyData = {
-      1: [
-        { word: "happy", options: ["Feeling sad", "Feeling joyful", "Feeling angry", "Feeling tired"], correct: 1, hint: "When you get a present, you feel this way." },
-        { word: "big", options: ["Very small", "Very large", "Very fast", "Very slow"], correct: 1, hint: "An elephant is this compared to a mouse." },
-        { word: "run", options: ["To walk slowly", "To move quickly", "To sleep", "To eat"], correct: 1, hint: "What you do in a race." },
-        { word: "cold", options: ["Very hot", "Very warm", "Low temperature", "Medium temperature"], correct: 2, hint: "How you feel when it snows." },
-        { word: "friend", options: ["Someone you don't know", "Someone you play with", "A stranger", "An enemy"], correct: 1, hint: "A person you like to spend time with." },
-        { word: "house", options: ["A car", "A building where people live", "A tree", "A school"], correct: 1, hint: "Where your family lives." },
-        { word: "book", options: ["Something to eat", "Pages with stories to read", "A toy", "A game"], correct: 1, hint: "You read this at bedtime." },
-        { word: "water", options: ["Something solid", "Clear liquid we drink", "Something hot", "Something sweet"], correct: 1, hint: "Fish live in this." },
-        { word: "sun", options: ["The moon", "The bright star we see in daytime", "A planet", "A cloud"], correct: 1, hint: "It gives us light during the day." },
-        { word: "cat", options: ["A big animal", "A small furry pet that says 'meow'", "A bird", "A fish"], correct: 1, hint: "An animal that likes to chase mice." }
-      ],
-      2: [
-        { word: "delicious", options: ["Tastes bad", "Tastes very good", "Looks pretty", "Smells bad"], correct: 1, hint: "How you describe your favorite food." },
-        { word: "disappear", options: ["To appear", "To vanish from sight", "To grow bigger", "To change color"], correct: 1, hint: "What a magic trick makes things do." },
-        { word: "enormous", options: ["Very small", "Very large", "Very fast", "Very colorful"], correct: 1, hint: "A dinosaur was this size." },
-        { word: "frightened", options: ["Very happy", "Very scared", "Very angry", "Very tired"], correct: 1, hint: "How you feel during a scary movie." },
-        { word: "giggle", options: ["To cry loudly", "To laugh quietly", "To shout", "To whisper"], correct: 1, hint: "What you do at a funny joke." },
-        { word: "hibernate", options: ["To sleep all winter", "To eat a lot", "To run fast", "To fly high"], correct: 0, hint: "What bears do in winter." },
-        { word: "imagine", options: ["To forget", "To create pictures in your mind", "To write", "To draw"], correct: 1, hint: "What you do when you think of fairytales." },
-        { word: "journey", options: ["A short walk", "A long trip", "A quick visit", "A small task"], correct: 1, hint: "Going on vacation is one of these." },
-        { word: "knowledge", options: ["Being silly", "What you know and learn", "Being strong", "Being fast"], correct: 1, hint: "What you get from reading books." },
-        { word: "leap", options: ["To walk slowly", "To jump high or far", "To crawl", "To swim"], correct: 1, hint: "What a frog does." }
-      ],
-      3: [
-        { word: "magnificent", options: ["Very ordinary", "Very impressive and beautiful", "Very small", "Very ugly"], correct: 1, hint: "How you might describe a castle." },
-        { word: "navigate", options: ["To get lost", "To find your way", "To sleep", "To eat"], correct: 1, hint: "What a captain does with a ship." },
-        { word: "observe", options: ["To ignore", "To watch carefully", "To forget", "To guess"], correct: 1, hint: "What scientists do in experiments." },
-        { word: "patient", options: ["In a hurry", "Able to wait calmly", "Very angry", "Very loud"], correct: 1, hint: "How you should be in a long line." },
-        { word: "quench", options: ["To make thirsty", "To satisfy thirst", "To make hungry", "To make tired"], correct: 1, hint: "What water does when you're thirsty." },
-        { word: "rare", options: ["Very common", "Not happening often", "Always happening", "Never happening"], correct: 1, hint: "A blue diamond is this." },
-        { word: "splendid", options: ["Very bad", "Very good or excellent", "Very small", "Very old"], correct: 1, hint: "Another word for wonderful." },
-        { word: "tremble", options: ["To stand still", "To shake slightly", "To run fast", "To jump high"], correct: 1, hint: "What you might do when you're cold or scared." },
-        { word: "unique", options: ["Like everyone else", "One of a kind", "Very common", "Very old"], correct: 1, hint: "Your fingerprint is this." },
-        { word: "vanish", options: ["To appear suddenly", "To disappear suddenly", "To grow bigger", "To change color"], correct: 1, hint: "What a magic trick makes things do." }
-      ]
-    };
+<div class="screen" id="resultScreen">
+  <div class="result-card">
+    <div class="result-emoji" id="resEmoji"></div>
+    <div class="result-title" id="resTitle"></div>
+    <div class="result-pct" id="resPct"></div>
+    <div class="result-stars" id="resStars"></div>
+    <div class="result-msg" id="resMsg"></div>
+    <div class="mistake-section" id="mistakeSection"></div>
+    <div class="btn-row" style="justify-content:center;margin-top:16px">
+      <button class="btn btn-back" id="retryBtn">🔁 Try Again</button>
+      <button class="btn btn-check" onclick="showHome()">🏠 Home</button>
+      <button class="btn btn-next" id="nextLvBtn" style="display:none">➡ Next Level</button>
+    </div>
+  </div>
+</div>
 
-    const sequencingData = {
-      1: [
-        {
-          context: "Tom woke up feeling very hungry.",
-          options: [
-            "He went back to sleep.",
-            "He brushed his teeth.",
-            "He ate breakfast.",
-            "He watched TV."
-          ],
-          correct: 2,
-          explanation: "When you wake up hungry, the logical next step is to eat breakfast."
-        },
-        {
-          context: "The sky turned dark and thunder rumbled.",
-          options: [
-            "The sun came out brightly.",
-            "Birds started singing.",
-            "Rain began to fall.",
-            "Children went outside to play."
-          ],
-          correct: 2,
-          explanation: "Dark sky and thunder usually mean rain is coming."
-        },
-        {
-          context: "Sarah opened her new coloring book.",
-          options: [
-            "She went to sleep.",
-            "She ate dinner.",
-            "She chose her favorite crayons.",
-            "She watched a movie."
-          ],
-          correct: 2,
-          explanation: "After opening a coloring book, you would choose crayons to start coloring."
-        },
-        {
-          context: "The cookies were baking in the oven.",
-          options: [
-            "Mom turned off the oven.",
-            "The kitchen smelled delicious.",
-            "They went for a walk.",
-            "They ate raw cookie dough."
-          ],
-          correct: 1,
-          explanation: "When cookies bake, they make the kitchen smell good."
-        },
-        {
-          context: "Ben's ice cream started to melt in the sun.",
-          options: [
-            "He put it in the freezer.",
-            "He ate it quickly.",
-            "He threw it away.",
-            "He gave it to a friend."
-          ],
-          correct: 1,
-          explanation: "When ice cream melts, you should eat it quickly before it disappears!"
-        }
-      ],
-      2: [
-        {
-          context: "Emma finished her homework early.",
-          options: [
-            "She started watching TV.",
-            "She asked for more homework.",
-            "She put her books away and played outside.",
-            "She went to bed immediately."
-          ],
-          correct: 2,
-          explanation: "After finishing homework, children often play as a reward."
-        },
-        {
-          context: "The little seed was planted in the soil.",
-          options: [
-            "It was eaten by a bird.",
-            "It was washed away by rain.",
-            "With sun and water, it began to grow.",
-            "It turned into a rock."
-          ],
-          correct: 2,
-          explanation: "Seeds need sun and water to grow into plants."
-        },
-        {
-          context: "Alex found a lost puppy in the park.",
-          options: [
-            "He kept walking and ignored it.",
-            "He looked for its owner.",
-            "He ran away from it.",
-            "He went home for lunch."
-          ],
-          correct: 1,
-          explanation: "The responsible thing to do is try to find the puppy's owner."
-        },
-        {
-          context: "The library book was due tomorrow.",
-          options: [
-            "Maya decided to keep it forever.",
-            "She returned it to the library today.",
-            "She threw it in the trash.",
-            "She gave it to a friend."
-          ],
-          correct: 1,
-          explanation: "Books should be returned to the library on time."
-        },
-        {
-          context: "The team was losing the game by one point.",
-          options: [
-            "They gave up and went home.",
-            "They tried even harder to score.",
-            "They started arguing with each other.",
-            "They sat down and cried."
-          ],
-          correct: 1,
-          explanation: "Good sports keep trying even when they're behind."
-        }
-      ]
-    };
+</div>
 
-    const comprehensionData = {
-      1: [
-        {
-          passage: "Sam has a red ball. He likes to play with his ball in the park. He throws the ball and his dog, Max, chases it. Max brings the ball back to Sam. They play this game every afternoon.",
-          question: "What color is Sam's ball?",
-          options: ["Blue", "Red", "Green", "Yellow"],
-          correct: 1,
-          explanation: "The story says 'Sam has a red ball.'"
-        },
-        {
-          passage: "Today is Mia's birthday. She is seven years old. Her friends are coming to her house for a party. There will be cake and games. Mia is very excited.",
-          question: "How old is Mia?",
-          options: ["Five", "Six", "Seven", "Eight"],
-          correct: 2,
-          explanation: "The story says 'She is seven years old.'"
-        },
-        {
-          passage: "The sun is shining. Birds are singing. Flowers are blooming. It is a beautiful spring day. Children are playing outside.",
-          question: "What season is it?",
-          options: ["Winter", "Spring", "Summer", "Fall"],
-          correct: 1,
-          explanation: "Flowers blooming and nice weather suggest it's spring."
-        }
-      ],
-      2: [
-        {
-          passage: "Mr. Johnson is a baker. He wakes up very early every morning to make fresh bread. The bakery opens at 6 AM. People come to buy warm bread for breakfast. The smell of baking bread fills the whole street.",
-          question: "What time does the bakery open?",
-          options: ["5 AM", "6 AM", "7 AM", "8 AM"],
-          correct: 1,
-          explanation: "The story clearly states 'The bakery opens at 6 AM.'"
-        },
-        {
-          passage: "Lily planted some tomato seeds in her garden. She watered them every day. After two weeks, little green plants appeared. Lily was very happy to see her plants growing.",
-          question: "What did Lily plant?",
-          options: ["Flowers", "Carrots", "Tomatoes", "Potatoes"],
-          correct: 2,
-          explanation: "The story says 'Lily planted some tomato seeds.'"
-        },
-        {
-          passage: "The library is a quiet place. People come here to read books, study, and learn new things. There are books about everything you can imagine. You need to be quiet so you don't disturb others.",
-          question: "Why do you need to be quiet in the library?",
-          options: ["Because it's dark", "So you don't disturb others", "Because books are sleeping", "So you can eat snacks"],
-          correct: 1,
-          explanation: "The story says 'You need to be quiet so you don't disturb others.'"
-        }
-      ]
-    };
+<script>
+// ============================================================
+// DYNAMIC PROBLEM GENERATORS - Each section generates fresh problems!
+// ============================================================
 
-    // Game State
-    let gameProgress = {
-      vocabulary: { 1: { completed: false, unlocked: true, score: 0 } },
-      sequencing: { 1: { completed: false, unlocked: true, score: 0 } },
-      comprehension: { 1: { completed: false, unlocked: true, score: 0 } }
-    };
+// Random number generator
+function rnd(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-    // Initialize higher levels as locked
-    for (let i = 2; i <= 5; i++) {
-      gameProgress.vocabulary[i] = { completed: false, unlocked: false, score: 0 };
-      gameProgress.sequencing[i] = { completed: false, unlocked: false, score: 0 };
-      gameProgress.comprehension[i] = { completed: false, unlocked: false, score: 0 };
-    }
+// Shuffle array
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
-    let currentGameType = null;
-    let currentLevel = 1;
-    let questionNumber = 1;
-    let correctCount = 0;
-    let totalAttempts = 0;
-    let currentQuestion = null;
-    let questions = [];
-
-    // Save/Load Progress Functions
-    function saveProgress() {
-      const data = {
-        version: 1,
-        progress: gameProgress,
-        lastPlayed: new Date().toISOString()
-      };
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      } catch (e) {
-        console.warn("Could not save progress:", e);
-      }
-    }
-
-    function loadProgressFromLocalStorage() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const data = JSON.parse(raw);
-        if (!data || data.version !== 1 || !data.progress) return;
-        
-        // Update progress for each game type
-        Object.keys(gameProgress).forEach(gameType => {
-          Object.keys(gameProgress[gameType]).forEach(level => {
-            if (data.progress[gameType] && data.progress[gameType][level]) {
-              gameProgress[gameType][level].completed = !!data.progress[gameType][level].completed;
-              gameProgress[gameType][level].unlocked = !!data.progress[gameType][level].unlocked;
-              gameProgress[gameType][level].score = data.progress[gameType][level].score || 0;
-            }
-          });
-        });
-      } catch (e) {
-        console.warn("Could not load progress:", e);
-      }
-    }
-
-    function exportProgressToFile() {
-      const data = { 
-        version: 1, 
-        progress: gameProgress,
-        lastPlayed: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "reading-adventure-progress.json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      // Show feedback
-      const feedback = document.getElementById("feedbackArea");
-      feedback.textContent = "Progress saved successfully!";
-      feedback.className = "feedback-area show correct";
-      setTimeout(() => feedback.classList.remove("show"), 2000);
-    }
-
-    function importProgressFromFile(file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (!data || data.version !== 1 || !data.progress) {
-            alert("This file does not look like a valid progress file.");
-            return;
-          }
-          
-          // Update progress
-          Object.keys(gameProgress).forEach(gameType => {
-            Object.keys(gameProgress[gameType]).forEach(level => {
-              if (data.progress[gameType] && data.progress[gameType][level]) {
-                gameProgress[gameType][level].completed = !!data.progress[gameType][level].completed;
-                gameProgress[gameType][level].unlocked = !!data.progress[gameType][level].unlocked;
-                gameProgress[gameType][level].score = data.progress[gameType][level].score || 0;
-              }
-            });
-          });
-          
-          saveProgress();
-          alert("Progress loaded successfully! Click OK to continue.");
-        } catch (err) {
-          console.error(err);
-          alert("Could not read this file. Please check and try again.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    // Game Flow Functions
-    function selectGameType(gameType) {
-      currentGameType = gameType;
-      document.getElementById("mainMenu").style.display = "none";
-      document.getElementById("levelSelector").classList.add("active");
-      renderLevelButtons();
-    }
-
-    function renderLevelButtons() {
-      const container = document.getElementById("levelButtons");
-      container.innerHTML = "";
-      
-      for (let level = 1; level <= 5; level++) {
-        const btn = document.createElement("button");
-        const progress = gameProgress[currentGameType][level];
-        
-        btn.className = "level-btn";
-        if (!progress.unlocked) btn.classList.add("locked");
-        if (progress.completed) btn.classList.add("completed");
-        
-        btn.innerHTML = `
-          <div style="font-size: 1.5em; margin-bottom: 5px;">${getLevelEmoji(level)}</div>
-          Level ${level}<br>
-          <small style="font-size: 0.8em; opacity: 0.9;">${getLevelDescription(currentGameType, level)}</small>
-        `;
-        
-        if (progress.completed) {
-          const badge = document.createElement("div");
-          badge.className = "level-badge";
-          badge.textContent = "★";
-          btn.appendChild(badge);
-        }
-        
-        if (!progress.unlocked) {
-          const lock = document.createElement("div");
-          lock.className = "lock-icon";
-          lock.textContent = "🔒";
-          btn.appendChild(lock);
-        }
-        
-        if (progress.unlocked) {
-          btn.onclick = () => startLevel(level);
-        }
-        
-        container.appendChild(btn);
-      }
-    }
-
-    function getLevelEmoji(level) {
-      const emojis = ["😊", "😎", "🤩", "🏆", "👑"];
-      return emojis[level - 1] || "🌟";
-    }
-
-    function getLevelDescription(gameType, level) {
-      const descriptions = {
-        vocabulary: ["Easy Words", "Medium Words", "Hard Words", "Expert Words", "Master Words"],
-        sequencing: ["Simple Stories", "Medium Stories", "Complex Stories", "Challenging Stories", "Expert Stories"],
-        comprehension: ["Short Passages", "Medium Passages", "Long Passages", "Complex Passages", "Expert Passages"]
-      };
-      return descriptions[gameType][level - 1] || "Level " + level;
-    }
-
-    function startLevel(level) {
-      currentLevel = level;
-      questionNumber = 1;
-      correctCount = 0;
-      totalAttempts = 0;
-      
-      // Load questions based on game type and level
-      switch(currentGameType) {
-        case GAME_TYPES.VOCABULARY:
-          questions = vocabularyData[Math.min(level, 3)] || vocabularyData[3];
-          break;
-        case GAME_TYPES.SEQUENCING:
-          questions = sequencingData[Math.min(level, 2)] || sequencingData[2];
-          break;
-        case GAME_TYPES.COMPREHENSION:
-          questions = comprehensionData[Math.min(level, 2)] || comprehensionData[2];
-          break;
-      }
-      
-      // Hide level selector, show game area
-      document.getElementById("levelSelector").classList.remove("active");
-      document.getElementById("gameArea").classList.add("active");
-      
-      // Hide all game types first
-      document.getElementById("vocabularyGame").style.display = "none";
-      document.getElementById("sequencingGame").style.display = "none";
-      document.getElementById("comprehensionGame").style.display = "none";
-      
-      // Show current game type
-      document.getElementById(currentGameType + "Game").style.display = "block";
-      document.getElementById("gameType").textContent = 
-        currentGameType.charAt(0).toUpperCase() + currentGameType.slice(1);
-      
-      loadQuestion();
-    }
-
-    function loadQuestion() {
-      if (questionNumber > QUESTIONS_PER_LEVEL || questionNumber > questions.length) {
-        showCompletion();
-        return;
-      }
-      
-      currentQuestion = questions[questionNumber - 1];
-      
-      // Reset UI
-      document.getElementById("feedbackArea").classList.remove("show");
-      document.getElementById("explanationBox").classList.remove("show");
-      document.getElementById("hintBox").classList.remove("show");
-      document.getElementById("nextBtn").style.display = "none";
-      
-      // Enable hint button for first few questions
-      const hintBtn = document.getElementById("hintBtn");
-      if (questionNumber <= 3) {
-        hintBtn.classList.remove("disabled");
-        hintBtn.disabled = false;
-      } else {
-        hintBtn.classList.add("disabled");
-        hintBtn.disabled = true;
-      }
-      
-      // Load question based on game type
-      switch(currentGameType) {
-        case GAME_TYPES.VOCABULARY:
-          loadVocabularyQuestion();
-          break;
-        case GAME_TYPES.SEQUENCING:
-          loadSequencingQuestion();
-          break;
-        case GAME_TYPES.COMPREHENSION:
-          loadComprehensionQuestion();
-          break;
-      }
-      
-      updateScoreboard();
-    }
-
-    function loadVocabularyQuestion() {
-      document.getElementById("targetWord").textContent = currentQuestion.word;
-      document.getElementById("vocabQuestion").textContent = `What does "${currentQuestion.word}" mean?`;
-      
-      const optionsContainer = document.getElementById("vocabOptions");
-      optionsContainer.innerHTML = "";
-      
-      const letters = ['A', 'B', 'C', 'D'];
-      currentQuestion.options.forEach((option, index) => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerHTML = `
-          <div class="option-letter">${letters[index]}</div>
-          <div>${option}</div>
-        `;
-        btn.onclick = () => checkAnswer(index);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    function loadSequencingQuestion() {
-      document.getElementById("contextText").textContent = currentQuestion.context;
-      
-      const optionsContainer = document.getElementById("sequencingOptions");
-      optionsContainer.innerHTML = "";
-      
-      currentQuestion.options.forEach((option, index) => {
-        const div = document.createElement("div");
-        div.className = "sentence-option";
-        div.innerHTML = `
-          <div class="number">${index + 1}</div>
-          <div>${option}</div>
-        `;
-        div.onclick = () => checkAnswer(index);
-        optionsContainer.appendChild(div);
-      });
-    }
-
-    function loadComprehensionQuestion() {
-      document.getElementById("readingPassage").textContent = currentQuestion.passage;
-      document.getElementById("comprehensionQuestion").textContent = currentQuestion.question;
-      
-      const optionsContainer = document.getElementById("comprehensionOptions");
-      optionsContainer.innerHTML = "";
-      
-      const letters = ['A', 'B', 'C', 'D'];
-      currentQuestion.options.forEach((option, index) => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerHTML = `
-          <div class="option-letter">${letters[index]}</div>
-          <div>${option}</div>
-        `;
-        btn.onclick = () => checkAnswer(index);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    function checkAnswer(selectedIndex) {
-      totalAttempts++;
-      const isCorrect = selectedIndex === currentQuestion.correct;
-      
-      if (isCorrect) {
-        correctCount++;
-        showFeedback("Correct! 🎉", true);
-      } else {
-        showFeedback(`Not quite. Let's learn!`, false);
-      }
-      
-      // Show explanation
-      if (currentQuestion.explanation) {
-        document.getElementById("explanationBox").innerHTML = `
-          <h3>Explanation</h3>
-          <p>${currentQuestion.explanation}</p>
-        `;
-        document.getElementById("explanationBox").classList.add("show");
-      }
-      
-      // Disable all options
-      const selector = currentGameType === GAME_TYPES.SEQUENCING ? ".sentence-option" : ".option-btn";
-      document.querySelectorAll(selector).forEach((btn, index) => {
-        btn.disabled = true;
-        if (index === currentQuestion.correct) {
-          btn.classList.add("correct");
-        } else if (index === selectedIndex && !isCorrect) {
-          btn.classList.add("incorrect");
-        }
-      });
-      
-      // Show next button
-      document.getElementById("nextBtn").style.display = "inline-block";
-      
-      updateScoreboard();
-    }
-
-    function showFeedback(message, isCorrect) {
-      const feedback = document.getElementById("feedbackArea");
-      feedback.textContent = message;
-      feedback.className = "feedback-area show " + (isCorrect ? "correct" : "incorrect");
-    }
-
-    function showHint() {
-      const hintBox = document.getElementById("hintBox");
-      if (currentQuestion.hint) {
-        hintBox.innerHTML = `<strong>💡 Hint:</strong> ${currentQuestion.hint}`;
-        hintBox.classList.add("show");
-      }
-    }
-
-    function nextQuestion() {
-      questionNumber++;
-      loadQuestion();
-    }
-
-    function updateScoreboard() {
-      document.getElementById("questionNumber").textContent = 
-        `${questionNumber}/${Math.min(QUESTIONS_PER_LEVEL, questions.length)}`;
-      document.getElementById("correctScore").textContent = correctCount;
-      
-      const accuracy = totalAttempts === 0 ? 0 : Math.round((correctCount / totalAttempts) * 100);
-      document.getElementById("accuracyScore").textContent = `${accuracy}%`;
-      
-      const progress = ((questionNumber - 1) / Math.min(QUESTIONS_PER_LEVEL, questions.length)) * 100;
-      const fill = document.getElementById("progressFill");
-      fill.style.width = `${progress}%`;
-      fill.textContent = `${Math.round(progress)}%`;
-    }
-
-    function showCompletion() {
-      const accuracy = totalAttempts === 0 ? 0 : correctCount / totalAttempts;
-      const percentage = Math.round(accuracy * 100);
-      const passed = accuracy >= MASTERY_THRESHOLD;
-      
-      // Update progress
-      if (passed) {
-        gameProgress[currentGameType][currentLevel].completed = true;
-        gameProgress[currentGameType][currentLevel].score = percentage;
-        
-        // Unlock next level if exists
-        if (currentLevel < 5) {
-          gameProgress[currentGameType][currentLevel + 1].unlocked = true;
-        }
-      }
-      
-      saveProgress();
-      
-      // Update modal
-      document.getElementById("completionTitle").textContent = 
-        passed ? "Level Complete! 🎉" : "Keep Practicing!";
-      
-      document.getElementById("completionScore").textContent = `${percentage}%`;
-      document.getElementById("completionScore").style.color = 
-        passed ? "#00b894" : "#d63031";
-      
-      const starsCount = Math.min(5, Math.ceil(percentage / 20));
-      document.getElementById("starsDisplay").textContent = "⭐".repeat(starsCount);
-      
-      document.getElementById("completionMessage").innerHTML = passed ? 
-        `Excellent work! You got ${correctCount} out of ${totalAttempts} correct.<br>You've unlocked the next level!` :
-        `You got ${correctCount} out of ${totalAttempts} correct.<br>Try again to reach ${MASTERY_THRESHOLD * 100}% accuracy!`;
-      
-      document.getElementById("completionBtn").textContent = 
-        passed ? "Continue" : "Try Again";
-      
-      document.getElementById("completionModal").classList.add("show");
-    }
-
-    function closeCompletionModal() {
-      document.getElementById("completionModal").classList.remove("show");
-      document.getElementById("gameArea").classList.remove("active");
-      document.getElementById("levelSelector").classList.add("active");
-      renderLevelButtons();
-    }
-
-    function backToMenu() {
-      if (confirm("Leave this level? Your progress for this session will be lost.")) {
-        // Reset game state
-        currentGameType = null;
-        currentLevel = 1;
-        questionNumber = 1;
-        correctCount = 0;
-        totalAttempts = 0;
-        currentQuestion = null;
-        questions = [];
-        
-        // Clean up UI
-        document.getElementById("gameArea").classList.remove("active");
-        document.getElementById("levelSelector").classList.remove("active");
-        document.getElementById("mainMenu").style.display = "flex";
-        
-        // Hide all game content
-        document.getElementById("vocabularyGame").style.display = "none";
-        document.getElementById("sequencingGame").style.display = "none";
-        document.getElementById("comprehensionGame").style.display = "none";
-        
-        // Reset UI elements
-        document.getElementById("feedbackArea").classList.remove("show");
-        document.getElementById("explanationBox").classList.remove("show");
-        document.getElementById("hintBox").classList.remove("show");
-        document.getElementById("nextBtn").style.display = "none";
-        
-        updateScoreboard();
-      }
-    }
-
-    // Hook up import/export buttons
-    document.getElementById("exportBtn").onclick = exportProgressToFile;
-    document.getElementById("importBtn").onclick = () => {
-      document.getElementById("progressFile").click();
-    };
-    document.getElementById("progressFile").addEventListener("change", e => {
-      const file = e.target.files[0];
-      if (file) importProgressFromFile(file);
-      // Reset file input
-      e.target.value = '';
+// ========== VOCABULARY GENERATORS ==========
+function generateVocabWords(level) {
+  const wordBanks = {
+    1: [
+      {word:"happy", meaning:"feeling or showing joy", options:["sad","joyful","angry","tired"], hint:"😊 When you get a gift, you feel this!"},
+      {word:"big", meaning:"large in size", options:["tiny","huge","fast","slow"], hint:"🐘 An elephant is this!"},
+      {word:"fast", meaning:"moving quickly", options:["slow","quick","loud","quiet"], hint:"🏃 A cheetah can run very ___!"},
+      {word:"cold", meaning:"low temperature", options:["hot","warm","freezing","cool"], hint:"❄️ Ice cream is ___!"},
+      {word:"friend", meaning:"person you like", options:["enemy","pal","stranger","teacher"], hint:"👫 Someone you play with!"},
+      {word:"house", meaning:"building to live in", options:["car","home","school","store"], hint:"🏠 Where your family lives!"},
+      {word:"book", meaning:"pages with stories", options:["toy","story","game","movie"], hint:"📚 You read this at bedtime!"},
+      {word:"water", meaning:"clear liquid we drink", options:["juice","rain","soda","milk"], hint:"💧 Fish swim in this!"},
+      {word:"sun", meaning:"bright star in daytime", options:["moon","star","light","cloud"], hint:"☀️ It gives us light!"},
+      {word:"cat", meaning:"small furry pet", options:["dog","kitten","bird","fish"], hint:"🐱 It says 'meow'!"},
+      {word:"run", meaning:"move quickly on foot", options:["walk","jog","sit","sleep"], hint:"🏃 What you do in a race!"},
+      {word:"sleep", meaning:"rest with eyes closed", options:["nap","wake","play","eat"], hint:"😴 What you do at night!"}
+    ],
+    2: [
+      {word:"enormous", meaning:"very very large", options:["tiny","huge","small","average"], hint:"🦕 A dinosaur was this size!"},
+      {word:"delicious", meaning:"tastes very good", options:["yucky","yummy","sour","bitter"], hint:"😋 Your favorite pizza is ___!"},
+      {word:"frightened", meaning:"very scared", options:["brave","afraid","calm","happy"], hint:"😱 How you feel during a scary movie!"},
+      {word:"giggle", meaning:"laugh in a silly way", options:["cry","chuckle","shout","whisper"], hint:"😂 What you do at a funny joke!"},
+      {word:"hibernate", meaning:"sleep all winter", options:["play","sleep","eat","migrate"], hint:"🐻 What bears do in winter!"},
+      {word:"leap", meaning:"jump high or far", options:["walk","hop","crawl","swim"], hint:"🐸 What a frog does!"},
+      {word:"whisper", meaning:"speak very softly", options:["shout","murmur","scream","sing"], hint:"🤫 What you do in a library!"},
+      {word:"discover", meaning:"find something new", options:["lose","find","hide","break"], hint:"🔭 Explorers love to ___ new lands!"}
+    ],
+    3: [
+      {word:"magnificent", meaning:"very beautiful and impressive", options:["ordinary","splendid","ugly","simple"], hint:"🏰 A castle is ___!"},
+      {word:"observe", meaning:"watch carefully", options:["ignore","watch","forget","miss"], hint:"🔬 Scientists ___ things!"},
+      {word:"patient", meaning:"able to wait calmly", options:["impatient","calm","angry","loud"], hint:"⏳ You need this in a long line!"},
+      {word:"rare", meaning:"not happening often", options:["common","unusual","normal","regular"], hint:"💎 A diamond is ___!"},
+      {word:"unique", meaning:"one of a kind", options:["common","special","normal","average"], hint:"🦄 Your fingerprint is ___!"},
+      {word:"vanish", meaning:"disappear suddenly", options:["appear","disappear","grow","stay"], hint:"🪄 Magic makes things ___!"},
+      {word:"courageous", meaning:"very brave", options:["scared","brave","weak","shy"], hint:"🦁 Firefighters are ___!"},
+      {word:"generous", meaning:"happy to share", options:["selfish","giving","mean","greedy"], hint:"🎁 Someone who shares is ___!"}
+    ],
+    4: [
+      {word:"persevere", meaning:"keep trying despite difficulty", options:["give up","persist","quit","stop"], hint:"💪 Keep going even when it's hard!"},
+      {word:"reluctant", meaning:"not wanting to do something", options:["eager","unwilling","excited","happy"], hint:"😒 How you feel about chores!"},
+      {word:"transparent", meaning:"clear — able to see through", options:["opaque","clear","dark","solid"], hint:"🪟 A window is ___!"},
+      {word:"exhausted", meaning:"extremely tired", options:["energetic","tired","rested","awake"], hint:"😴 After running a marathon!"},
+      {word:"collaborate", meaning:"work together", options:["compete","cooperate","fight","ignore"], hint:"🤝 What teammates do!"},
+      {word:"ancient", meaning:"very old", options:["new","old","modern","fresh"], hint:"🏛️ The pyramids are ___!"},
+      {word:"fragile", meaning:"easily broken", options:["strong","delicate","tough","hard"], hint:"🥚 Handle with care — it's ___!"},
+      {word:"identical", meaning:"exactly the same", options:["different","matching","unique","opposite"], hint:"👯 Twins look ___!"}
+    ],
+    5: [
+      {word:"benevolent", meaning:"kind and generous", options:["cruel","kind","mean","selfish"], hint:"👑 A good king is ___!"},
+      {word:"eloquent", meaning:"speaking clearly and well", options:["mumbling","articulate","quiet","loud"], hint:"🎤 A great speaker is ___!"},
+      {word:"perseverance", meaning:"continued effort despite difficulty", options:["giving up","determination","laziness","quitting"], hint:"🧗 Climbing a mountain needs ___!"},
+      {word:"phenomenon", meaning:"remarkable event", options:["normal","miracle","common","usual"], hint:"🌌 A solar eclipse is a natural ___!"},
+      {word:"contemplate", meaning:"think deeply", options:["ignore","ponder","forget","rush"], hint:"🤔 Before a big decision, you ___!"},
+      {word:"innovation", meaning:"new idea or invention", options:["tradition","creation","copy","old"], hint:"💡 The smartphone was an ___!"},
+      {word:"empathy", meaning:"understanding others' feelings", options:["selfishness","compassion","cruelty","meanness"], hint:"❤️ Feeling sad when a friend is sad is ___!"},
+      {word:"inevitable", meaning:"certain to happen", options:["avoidable","unavoidable","possible","maybe"], hint:"⚖️ Sunrise every morning is ___!"}
+    ]
+  };
+  
+  let pool = wordBanks[level] || wordBanks[1];
+  // Shuffle and take 10 random words, generating fresh options each time
+  let words = shuffle([...pool]);
+  let questions = [];
+  
+  for(let i = 0; i < Math.min(10, words.length); i++) {
+    let w = words[i];
+    // Generate fresh wrong options
+    let wrongOptions = [];
+    let allMeanings = pool.map(p => p.meaning).filter(m => m !== w.meaning);
+    allMeanings = shuffle(allMeanings);
+    wrongOptions = allMeanings.slice(0, 3).map(m => m.charAt(0).toUpperCase() + m.slice(1));
+    
+    // Mix correct answer in
+    let options = [w.meaning.charAt(0).toUpperCase() + w.meaning.slice(1), ...wrongOptions];
+    options = shuffle(options);
+    
+    questions.push({
+      word: w.word,
+      emoji: w.hint.split(' ')[0] || "🔤",
+      options: options,
+      correct: options.indexOf(w.meaning.charAt(0).toUpperCase() + w.meaning.slice(1)),
+      hint: w.hint,
+      explanation: `"${w.word}" means ${w.meaning}. ${w.hint}`
     });
+  }
+  
+  return questions;
+}
 
-    // Initialize
-    loadProgressFromLocalStorage();
-  </script>
+// ========== SEQUENCE GENERATORS ==========
+function generateSequenceQuestions(level) {
+  const scenarios = {
+    1: [
+      {start: "Tom woke up feeling very hungry.", next: "He went to the kitchen to eat breakfast.", wrong: ["He went back to sleep.", "He watched TV.", "He went outside to play."]},
+      {start: "The sky turned very dark and thunder rumbled.", next: "Rain began to fall heavily.", wrong: ["The sun came out.", "Birds started singing.", "Children went to the beach."]},
+      {start: "Sarah opened her new coloring book.", next: "She picked up her favorite crayons.", wrong: ["She went to sleep.", "She ate dinner.", "She watched a movie."]},
+      {start: "Ben's ice cream started melting in the sun.", next: "He ate it as fast as he could.", wrong: ["He put it in the freezer.", "He threw it away.", "He gave it to a friend."]},
+      {start: "The candles on the cake were lit.", next: "Everyone sang Happy Birthday.", wrong: ["Everyone went home.", "Everyone started crying.", "Everyone ate pizza."]},
+      {start: "Maria put on her raincoat and grabbed her umbrella.", next: "She went outside in the rain.", wrong: ["She went swimming.", "She sat by the window.", "She went to bed."]},
+      {start: "The puppy started barking at the front door.", next: "Someone was arriving at the house.", wrong: ["It went back to sleep.", "It ate its food.", "It played with a toy."]},
+      {start: "Jake's bicycle tire was completely flat.", next: "He asked his dad to help fix it.", wrong: ["He rode it anyway.", "He threw the bike away.", "He walked past it."]},
+      {start: "The school bell rang at 3 o'clock.", next: "Students packed up to go home.", wrong: ["Students sat down.", "The teacher started a new lesson.", "Everyone was quiet."]},
+      {start: "The baby started crying at night.", next: "Mom woke up to check on the baby.", wrong: ["Everyone kept sleeping.", "The baby fell back asleep.", "The family went for a walk."]}
+    ],
+    2: [
+      {start: "Emma finished all her homework early.", next: "She went outside to play with friends.", wrong: ["She started more homework.", "She went straight to bed.", "She asked for harder work."]},
+      {start: "Alex found a lost puppy in the park.", next: "He looked for the puppy's owner.", wrong: ["He kept walking.", "He ran away.", "He went home to eat."]},
+      {start: "Maya's library book was due tomorrow.", next: "She returned it to the library today.", wrong: ["She kept it forever.", "She threw it away.", "She gave it to a friend."]},
+      {start: "The soccer team was losing by one goal.", next: "They tried even harder to score.", wrong: ["They gave up.", "They argued with each other.", "They sat on the grass."]},
+      {start: "Dad smelled something burning from the kitchen.", next: "He ran to check what was on the stove.", wrong: ["He turned up the TV.", "He read his newspaper.", "He went upstairs."]},
+      {start: "Grandpa's plants were wilting in the garden.", next: "He watered them right away.", wrong: ["He added fertilizer.", "He pulled them out.", "He built a fence."]},
+      {start: "The science project was due in two days.", next: "Priya started working on it right away.", wrong: ["She waited until tomorrow.", "She asked a friend to do it.", "She forgot about it."]},
+      {start: "It was getting dark and cold outside.", next: "Sam went inside the house.", wrong: ["Sam stayed out later.", "Sam invited more friends.", "Sam started a campfire."]}
+    ],
+    3: [
+      {start: "The scientist's experiment gave an unexpected result.", next: "She repeated the experiment to check it.", wrong: ["She ignored the result.", "She threw away her notes.", "She said it was a failure."]},
+      {start: "Rosa saw a classmate sitting alone at lunch, looking sad.", next: "Rosa went over to sit with her.", wrong: ["Rosa kept eating with friends.", "Rosa pointed and whispered.", "Rosa told the teacher."]},
+      {start: "Oliver's tooth had been aching for a week.", next: "His parents made a dentist appointment.", wrong: ["He ignored the pain.", "He ate more candy.", "He pulled the tooth himself."]},
+      {start: "The hiking trail became steep and dangerous after rain.", next: "The group decided to turn back.", wrong: ["They kept hiking fast.", "They split up.", "They sat down to wait."]},
+      {start: "Maya won the spelling bee; her teammate came second.", next: "Maya praised her teammate's effort.", wrong: ["Maya bragged loudly.", "Maya said she didn't try hard.", "Maya pretended not to win."]},
+      {start: "The class mural ran out of blue paint.", next: "They used other colors creatively.", wrong: ["They stopped working.", "They painted over everything.", "They argued about it."]}
+    ],
+    4: [
+      {start: "The athlete made a mistake during the competition.", next: "He learned from it and kept training.", wrong: ["He gave up competing.", "He blamed everyone else.", "He pretended it didn't happen."]},
+      {start: "An app was collecting private data without telling users.", next: "Users reported it and stopped using it.", wrong: ["Users kept using it.", "Users shared more data.", "Users told only friends."]},
+      {start: "The school's old computers kept crashing during lessons.", next: "The school applied for a grant to upgrade them.", wrong: ["Students stopped using computers.", "Teachers gave up on technology.", "Students fixed them themselves."]},
+      {start: "Lena's friend had been copying her homework all week.", next: "Lena talked to her friend privately about it.", wrong: ["She let her keep copying.", "She reported her immediately.", "She started copying too."]}
+    ],
+    5: [
+      {start: "A powerful new technology could both help millions and cause great harm.", next: "Scientists and governments made safety guidelines.", wrong: ["It was released without rules.", "It was destroyed completely.", "One person controlled it all."]},
+      {start: "Two countries had a dispute over a shared river's water rights.", next: "They agreed to international mediation.", wrong: ["The stronger took all the water.", "They went to war.", "Both stopped using the river."]},
+      {start: "A journalist found evidence of wrongdoing but faced threats.", next: "She published the story to inform the public.", wrong: ["She destroyed the evidence.", "She sold it to them.", "She kept it secret forever."]},
+      {start: "Scientists discovered a pesticide was killing bees.", next: "Everyone worked together to find safer alternatives.", wrong: ["Farmers kept using it.", "Scientists kept it secret.", "Bees were moved away."]}
+    ]
+  };
+  
+  let pool = scenarios[level] || scenarios[1];
+  let questions = [];
+  
+  for(let s of shuffle(pool).slice(0, 10)) {
+    let options = [s.next, ...s.wrong];
+    options = shuffle(options);
+    questions.push({
+      context: s.start,
+      options: options,
+      correct: options.indexOf(s.next),
+      hint: "Think about what would happen naturally next.",
+      explanation: `After "${s.start}", the most logical next thing is "${s.next}".`
+    });
+  }
+  
+  return questions;
+}
+
+// ========== COMPREHENSION GENERATORS ==========
+function generateComprehensionQuestions(level) {
+  const passages = {
+    1: [
+      {text: "Sam has a red ball. He likes to play with his ball in the park. He throws the ball and his dog Max chases it. Max brings the ball back to Sam.", 
+       questions: [
+         {q: "What color is Sam's ball?", a: "Red", wrong: ["Blue", "Green", "Yellow"]},
+         {q: "Where does Sam play with his ball?", a: "In the park", wrong: ["At home", "At school", "In the pool"]},
+         {q: "Who chases the ball?", a: "Max the dog", wrong: ["Sam's friend", "Sam's cat", "Sam's mom"]}
+       ]},
+      {text: "Today is Mia's birthday. She is seven years old. Her friends are coming to her house for a party. There will be cake and games.", 
+       questions: [
+         {q: "How old is Mia today?", a: "Seven", wrong: ["Six", "Eight", "Five"]},
+         {q: "Where is the party?", a: "At Mia's house", wrong: ["At school", "At the park", "At a restaurant"]},
+         {q: "What will there be at the party?", a: "Cake and games", wrong: ["Pizza and movies", "Ice cream and books", "Candy and toys"]}
+       ]},
+      {text: "Tom loves animals. He has a dog, two cats, and a fish. Every morning he feeds them all. His favorite is his dog, because the dog sleeps on his bed.", 
+       questions: [
+         {q: "How many cats does Tom have?", a: "Two", wrong: ["One", "Three", "Four"]},
+         {q: "Which animal is Tom's favorite?", a: "His dog", wrong: ["The fish", "The cats", "All of them"]},
+         {q: "Why is the dog his favorite?", a: "It sleeps on his bed", wrong: ["It can talk", "It's the biggest", "It's the smallest"]}
+       ]}
+    ],
+    2: [
+      {text: "The Great Barrier Reef is the world's largest coral reef system. It stretches over 2,300 kilometers along Australia's coast. Thousands of fish, sea turtles, and sharks live there. Rising ocean temperatures are harming the reef, so scientists are working to protect it.", 
+       questions: [
+         {q: "Where is the Great Barrier Reef located?", a: "Along Australia's coast", wrong: ["Near Africa", "In the Pacific Ocean", "Near Japan"]},
+         {q: "What is harming the reef?", a: "Rising ocean temperatures", wrong: ["Too many fish", "Pollution from ships", "Tourists swimming"]},
+         {q: "Who is working to protect it?", a: "Scientists", wrong: ["Fishermen", "Tourists", "Children"]}
+       ]},
+      {text: "Amelia Earhart was the first woman to fly solo across the Atlantic Ocean in 1932. She broke many records in aviation. In 1937 she tried to fly around the world but disappeared over the Pacific Ocean. Her bravery inspired millions.", 
+       questions: [
+         {q: "What did Amelia do in 1932?", a: "Flew solo across the Atlantic", wrong: ["Flew to the moon", "Broke the sound barrier", "Became an astronaut"]},
+         {q: "What happened in 1937?", a: "She disappeared over the Pacific", wrong: ["She landed safely", "She retired", "She wrote a book"]},
+         {q: "How did she inspire people?", a: "With her bravery", wrong: ["With her money", "With her beauty", "With her singing"]}
+       ]}
+    ],
+    3: [
+      {text: "Rainforests cover only 6% of Earth's surface, but they are home to more than half of the world's plant and animal species. They also produce 20% of the world's oxygen. Many medicines come from rainforest plants. Sadly, millions of acres are cut down each year, threatening thousands of species with extinction.", 
+       questions: [
+         {q: "What percentage of Earth do rainforests cover?", a: "6%", wrong: ["20%", "50%", "12%"]},
+         {q: "How much oxygen do rainforests produce?", a: "20%", wrong: ["50%", "6%", "80%"]},
+         {q: "Why are rainforests being destroyed?", a: "They are cut down", wrong: ["They dry up", "Animals eat them", "They catch fire"]}
+       ]},
+      {text: "Marie Curie was a scientist who discovered two new elements: polonium and radium. She was the first woman to win a Nobel Prize, and the first person to win Nobel Prizes in two sciences — Physics and Chemistry. Despite facing discrimination as a woman in science, she never gave up.", 
+       questions: [
+         {q: "What elements did Marie Curie discover?", a: "Polonium and radium", wrong: ["Oxygen and hydrogen", "Gold and silver", "Iron and copper"]},
+         {q: "How many Nobel Prizes did she win?", a: "Two", wrong: ["One", "Three", "Four"]},
+         {q: "What challenge did she face?", a: "Discrimination as a woman", wrong: ["She was too young", "She had no money", "She was sick"]}
+       ]}
+    ],
+    4: [
+      {text: "The Industrial Revolution began in Britain in the late 18th century. It changed society from farming to factory work. New machines made goods faster and cheaper. Cities grew quickly as people moved from the countryside. This created wealth but also led to poor working conditions for many workers, including children.", 
+       questions: [
+         {q: "Where did the Industrial Revolution begin?", a: "In Britain", wrong: ["In America", "In France", "In Germany"]},
+         {q: "What changed society to?", a: "Factory work", wrong: ["Farming", "Mining", "Sailing"]},
+         {q: "What negative effect is mentioned?", a: "Poor working conditions", wrong: ["Less food", "Too much money", "Cleaner air"]}
+       ]},
+      {text: "Photosynthesis is how plants make their own food using sunlight. Plants absorb water through roots and carbon dioxide through leaves. Using the sun's energy, they turn these into glucose for energy and release oxygen. This is why plants are essential for life on Earth.", 
+       questions: [
+         {q: "What do plants use to make food?", a: "Sunlight", wrong: ["Soil", "Rain", "Wind"]},
+         {q: "What do plants release?", a: "Oxygen", wrong: ["Carbon dioxide", "Water", "Sugar"]},
+         {q: "Why are plants essential?", a: "They produce oxygen", wrong: ["They look pretty", "They give shade", "They grow fruit"]}
+       ]}
+    ],
+    5: [
+      {text: "Artificial intelligence (AI) is changing how we live and work. AI can analyze huge amounts of data, recognize patterns, and make predictions faster than humans. In medicine, AI can detect diseases from scans accurately. However, there are concerns about job loss, privacy, and AI reflecting human biases in their algorithms.", 
+       questions: [
+         {q: "What can AI do in medicine?", a: "Detect diseases from scans", wrong: ["Perform surgery", "Prescribe medicine", "Talk to patients"]},
+         {q: "What is one concern about AI?", a: "It may reflect human biases", wrong: ["It's too slow", "It's too expensive", "It's too small"]},
+         {q: "Why is AI faster than humans?", a: "At analyzing data", wrong: ["At running races", "At jumping", "At swimming"]}
+       ]},
+      {text: "Democracy is a system where citizens elect their leaders and influence policy. It depends on free and fair elections, free speech, an independent press, and the rule of law. Modern challenges include misinformation, voter apathy, and leaders who win elections then weaken democratic institutions.", 
+       questions: [
+         {q: "Who has power in a democracy?", a: "Citizens", wrong: ["The president", "The military", "The wealthy"]},
+         {q: "What is one challenge to democracy?", a: "Misinformation", wrong: ["Too much voting", "Too many leaders", "Too many laws"]},
+         {q: "What protects democracy?", a: "Free and fair elections", wrong: ["One strong leader", "No voting", "Secret decisions"]}
+       ]}
+    ]
+  };
+  
+  let pool = passages[level] || passages[1];
+  let questions = [];
+  
+  for(let p of shuffle(pool).slice(0, 5)) {  // Use 5 passages with 2 questions each = 10 total
+    let qs = shuffle(p.questions);
+    for(let i = 0; i < Math.min(2, qs.length); i++) {
+      let q = qs[i];
+      let options = [q.a, ...q.wrong];
+      options = shuffle(options);
+      questions.push({
+        passage: p.text,
+        question: q.q,
+        options: options,
+        correct: options.indexOf(q.a),
+        hint: "Look back at the passage to find the answer.",
+        explanation: `The passage says: "${p.text}". So "${q.a}" is correct.`
+      });
+    }
+  }
+  
+  return shuffle(questions).slice(0, 10);
+}
+
+// ========== SPELLING GENERATORS ==========
+function generateSpellingWords(level) {
+  const wordBanks = {
+    1: ["cat", "dog", "sun", "big", "run", "hat", "map", "bed", "fun", "bug", "red", "box", "car", "ball"],
+    2: ["happy", "funny", "sunny", "puppy", "bunny", "candy", "daisy", "fairy", "rainy", "jumpy", "sleep", "green"],
+    3: ["friend", "night", "light", "chair", "train", "cloud", "bread", "heart", "beach", "earth", "grass", "plant"],
+    4: ["library", "dolphin", "kitchen", "blanket", "journey", "penguin", "holiday", "thunder", "climate", "october"],
+    5: ["beautiful", "discover", "adventure", "chocolate", "important", "celebrate", "knowledge", "wonderful", "invisible", "community"]
+  };
+  
+  let pool = wordBanks[level] || wordBanks[1];
+  let words = shuffle(pool).slice(0, 10);
+  
+  return words.map(word => ({
+    word: word,
+    emoji: getEmojiForWord(word),
+    hint: getHintForWord(word),
+    explanation: `"${word}" is spelled ${word.split('').join('-')}.`
+  }));
+}
+
+function getEmojiForWord(word) {
+  const emojiMap = {
+    cat: "🐱", dog: "🐶", sun: "☀️", big: "🐘", run: "🏃", hat: "🎩", map: "🗺️", bed: "🛏️", fun: "🎉", bug: "🐛",
+    happy: "😊", funny: "😂", sunny: "🌤️", puppy: "🐶", bunny: "🐰", candy: "🍬", daisy: "🌼", fairy: "🧚", rainy: "🌧️", jumpy: "🐸",
+    friend: "👫", night: "🌙", light: "💡", chair: "🪑", train: "🚂", cloud: "☁️", bread: "🍞", heart: "❤️", beach: "🏖️", earth: "🌍",
+    library: "📚", dolphin: "🐬", kitchen: "🍳", blanket: "🛏️", journey: "🗺️", penguin: "🐧", holiday: "🏖️", thunder: "⛈️", climate: "🌍",
+    beautiful: "🌸", discover: "🔭", adventure: "🏔️", chocolate: "🍫", important: "⭐", celebrate: "🎉", knowledge: "🧠", wonderful: "✨"
+  };
+  return emojiMap[word] || "🔤";
+}
+
+function getHintForWord(word) {
+  const hints = {
+    cat: "A furry pet that says meow",
+    dog: "Man's best friend",
+    sun: "Shines in the sky during the day",
+    big: "The opposite of small",
+    run: "Move quickly on your feet",
+    happy: "The opposite of sad",
+    friend: "Someone you love to spend time with",
+    beautiful: "Very pretty or lovely",
+    discover: "To find or learn something new"
+  };
+  return hints[word] || `Spell the word correctly!`;
+}
+
+// ============================================================
+// STATE MANAGEMENT
+// ============================================================
+const PASS_PCT = 80;
+const STORAGE_KEY = "readingAdv_v3";
+const CATS = {
+  vocab:{label:"Vocabulary",levels:5},
+  seq:{label:"Sequencing",levels:5},
+  comp:{label:"Comprehension",levels:5},
+  spell:{label:"Spelling",levels:5},
+};
+
+let progress = {};
+let cat="", level=0, questions=[], qi=0, correct=0, wrong=0, mistakes=[];
+let answered=false, hintCount=0;
+let spellTapped=[], spellAnswer="";
+
+function initProgress(){
+  Object.keys(CATS).forEach(c=>{
+    if(!progress[c]) progress[c]={};
+    for(let l=1;l<=CATS[c].levels;l++){
+      if(!progress[c][l]) progress[c][l]={done:false,score:0,unlocked:l===1};
+    }
+  });
+}
+
+function saveProgress(){
+  const blob=new Blob([JSON.stringify({v:3,progress},null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="reading-adventure-save.json";
+  a.click();
+  document.getElementById("saveLbl").textContent="✅ Saved!";
+  setTimeout(updateSaveLbl,2000);
+}
+function loadProgress(){ document.getElementById("loadFile").click(); }
+function loadFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.v===3&&d.progress){progress=d.progress;initProgress();updateSaveLbl();}
+      else alert("Invalid save file.");
+    }catch{alert("Could not read save file.");}
+  };
+  r.readAsText(file);
+  e.target.value="";
+}
+function updateSaveLbl(){
+  let done=0,total=0;
+  Object.keys(CATS).forEach(c=>{for(let l=1;l<=CATS[c].levels;l++){total++;if(progress[c]&&progress[c][l]&&progress[c][l].done)done++;}});
+  document.getElementById("saveLbl").textContent=done?done+"/"+total+" levels done":"No saves yet";
+  
+  // Update progress chart on home
+  let chart = document.getElementById("progressChart");
+  if(chart) {
+    let pct = Math.round((done/total)*100);
+    chart.innerHTML = `
+      <h3 style="color:#2D3561;margin-bottom:10px">📊 Your Progress</h3>
+      <div style="margin-bottom:5px">${done} of ${total} levels completed (${pct}%)</div>
+      <div class="progress-bar-cont"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    `;
+  }
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+function showHome(){ 
+  updateSaveLbl();
+  showScreen("homeScreen"); 
+}
+
+function openCategory(c){
+  cat=c;
+  document.getElementById("levelsTitle").textContent=CATS[c].label+" — Choose Level";
+  const grid=document.getElementById("levelsGrid");
+  grid.innerHTML="";
+  const emojis=["😊","😎","🤩","🏆","👑"];
+  for(let l=1;l<=CATS[c].levels;l++){
+    const p=progress[c][l];
+    const btn=document.createElement("button");
+    btn.className="lv-btn"+(p.unlocked?"":" locked")+(p.done?" done":"");
+    btn.innerHTML='<span class="lv-icon">'+emojis[l-1]+'</span>Level '+l+(p.done?'<div class="lv-score">Best: '+p.score+'%</div>':'')+(!p.unlocked?'<span class="lv-lock">🔒</span>':"");
+    if(p.unlocked) btn.onclick=(function(ll){return function(){startLevel(ll);};})(l);
+    grid.appendChild(btn);
+  }
+  showScreen("levelsScreen");
+}
+
+function startLevel(l){
+  level=l;
+  qi=0;
+  correct=0;
+  wrong=0;
+  mistakes=[];
+  answered=false;
+  hintCount=0;
+  spellTapped=[];
+  spellAnswer="";
+  
+  // Generate fresh problems every time!
+  if(cat === 'vocab') {
+    questions = generateVocabWords(Math.min(l, 5));
+  } else if(cat === 'seq') {
+    questions = generateSequenceQuestions(Math.min(l, 5));
+  } else if(cat === 'comp') {
+    questions = generateComprehensionQuestions(Math.min(l, 5));
+  } else if(cat === 'spell') {
+    questions = generateSpellingWords(Math.min(l, 5));
+  }
+  
+  document.getElementById("quizLabel").textContent=CATS[cat].label+" • Level "+l;
+  document.getElementById("audioBtn").style.display = cat === 'spell' ? "inline-flex" : "none";
+  showScreen("quizScreen");
+  loadQuestion();
+}
+
+function leaveQuiz(){
+  if(confirm("Leave this level? Current session progress will not be saved.")) showHome();
+}
+
+function loadQuestion(){
+  answered=false;
+  spellTapped=[];
+  spellAnswer="";
+  
+  const q=questions[qi];
+  const total=questions.length;
+  document.getElementById("quizQNum").textContent="Q "+(qi+1)+" / "+total;
+  document.getElementById("qsCorrect").textContent=correct;
+  document.getElementById("qsWrong").textContent=wrong;
+  const att=correct+wrong;
+  document.getElementById("qsAcc").textContent=att?Math.round(correct/att*100)+"%":"—";
+  document.getElementById("progFill").style.width=((qi)/total*100)+"%";
+  document.getElementById("feedback").className="feedback";
+  document.getElementById("explanation").className="explanation";
+  document.getElementById("hintBox").className="hint-box";
+  document.getElementById("checkBtn").style.display="inline-flex";
+  document.getElementById("nextBtn").style.display="none";
+  
+  const hintAllowed=qi<4 && hintCount<2 && cat!=="comp";
+  const hintBtn=document.getElementById("hintBtn");
+  hintBtn.style.display=hintAllowed?"inline-flex":"none";
+  hintBtn.disabled=false;
+  
+  if(cat==="vocab") renderVocab(q);
+  else if(cat==="seq") renderSeq(q);
+  else if(cat==="comp") renderComp(q);
+  else if(cat==="spell") renderSpell(q);
+}
+
+function renderVocab(q){
+  const card=document.getElementById("qCard");
+  card.style.borderTopColor="#00cec9";
+  card.innerHTML='<div class="q-type-badge">📖 Vocabulary</div><div class="q-word">'+(q.emoji||"")+" "+q.word+'</div><div class="q-text" style="text-align:center;margin-bottom:12px">What does this word mean?</div><div class="options two-col" id="opts"></div>';
+  renderOptions(q,document.getElementById("opts"));
+}
+function renderSeq(q){
+  const card=document.getElementById("qCard");
+  card.style.borderTopColor="#fd79a8";
+  card.innerHTML='<div class="q-type-badge">📝 What Happens Next?</div><div class="q-story">'+q.context+'</div><div class="q-text">What would happen <b>next</b> in this story?</div><div class="options" id="opts" style="margin-top:10px"></div>';
+  renderOptions(q,document.getElementById("opts"));
+}
+function renderComp(q){
+  const card=document.getElementById("qCard");
+  card.style.borderTopColor="#a29bfe";
+  card.innerHTML='<div class="q-type-badge">📖 Reading Comprehension</div><div class="q-passage">'+q.passage+'</div><div class="q-text">'+q.question+'</div><div class="options two-col" id="opts" style="margin-top:10px"></div>';
+  renderOptions(q,document.getElementById("opts"));
+}
+function renderOptions(q,container){
+  const letters=["A","B","C","D"];
+  container.innerHTML = '';
+  q.options.forEach(function(opt,i){
+    const btn=document.createElement("button");
+    btn.className="opt-btn";
+    btn.innerHTML='<div class="opt-letter">'+letters[i]+'</div><div>'+opt+'</div>';
+    btn.onclick=(function(idx){return function(){selectOption(idx,q,container);};})(i);
+    container.appendChild(btn);
+  });
+}
+
+function renderSpell(q){
+  const card=document.getElementById("qCard");
+  card.style.borderTopColor="#fdcb6e";
+  const letters=q.word.split("").sort(()=>Math.random()-0.5);
+  const extras="aeiourstlnm".split("");
+  while(letters.length<q.word.length+3){
+    const e=extras[Math.floor(Math.random()*extras.length)];
+    letters.push(e);
+  }
+  letters.sort(()=>Math.random()-0.5);
+  let blanksHtml="";
+  for(let i=0;i<q.word.length;i++) blanksHtml+='<div class="spell-blank" id="bl'+i+'">_</div>';
+  card.innerHTML='<div class="q-type-badge">✏️ Spelling</div><div class="spell-hint-img">'+q.emoji+'</div><div class="q-text" style="text-align:center">'+q.hint+'</div><div style="text-align:center;font-size:0.82rem;color:#888;margin:6px 0">Spell the word ('+q.word.length+' letters)</div><div class="spell-blanks" id="spellBlanks">'+blanksHtml+'</div><div class="letter-bank" id="letterBank"></div><input class="spell-input" id="spellInput" type="text" maxlength="'+q.word.length+'" placeholder="Type or tap letters..." oninput="spellTyped(this.value)">';
+  const bank=document.getElementById("letterBank");
+  letters.forEach(function(lt,i){
+    const tile=document.createElement("div");
+    tile.className="letter-tile";
+    tile.textContent=lt;
+    tile.dataset.idx=i;
+    tile.onclick=(function(l,idx){return function(){tapLetter(l,idx);};})(lt,i);
+    bank.appendChild(tile);
+  });
+}
+
+function playAudio() {
+  const q = questions[qi];
+  if(q && q.word) {
+    const utterance = new SpeechSynthesisUtterance(q.word);
+    utterance.rate = 0.8;
+    utterance.pitch = 1.2;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function tapLetter(lt,idx){
+  const q=questions[qi];
+  if(spellTapped.length>=q.word.length) return;
+  const tile=document.querySelector('.letter-tile[data-idx="'+idx+'"]');
+  if(tile&&tile.classList.contains("used")) return;
+  spellTapped.push({lt:lt,idx:idx});
+  spellAnswer=spellTapped.map(function(x){return x.lt;}).join("");
+  if(tile) tile.classList.add("used");
+  for(let i=0;i<q.word.length;i++){
+    const bl=document.getElementById("bl"+i);
+    if(bl) bl.textContent=spellTapped[i]?spellTapped[i].lt:"_";
+  }
+  document.getElementById("spellInput").value=spellAnswer;
+}
+function spellTyped(val){
+  const q=questions[qi];
+  spellAnswer=val.toLowerCase().trim();
+  spellTapped=[];
+  for(let i=0;i<q.word.length;i++){
+    const bl=document.getElementById("bl"+i);
+    if(bl) bl.textContent=val[i]||"_";
+  }
+}
+
+function selectOption(i,q,container){
+  if(answered) return;
+  answered=true;
+  const isCorrect=i===q.correct;
+  if(isCorrect){correct++;}else{wrong++;mistakes.push({q:questionSummary(q),exp:q.explanation||""});}
+  container.querySelectorAll(".opt-btn").forEach(function(b,idx){
+    b.disabled=true;
+    if(idx===q.correct) b.classList.add("correct");
+    else if(idx===i&&!isCorrect) b.classList.add("wrong");
+  });
+  showFeedback(isCorrect,q.explanation);
+}
+
+function checkAnswer(){
+  if(answered) return;
+  const q=questions[qi];
+  if(cat==="spell"){
+    const ans=spellAnswer.toLowerCase().trim();
+    const isCorrect=ans===q.word;
+    answered=true;
+    if(isCorrect){correct++;}
+    else{wrong++;mistakes.push({q:'Spell: "'+q.word+'"',exp:'The correct spelling is: '+q.word});}
+    showFeedback(isCorrect,isCorrect?'Correct! "'+q.word+'" is spelled perfectly!':'The correct spelling is: "'+q.word+'"');
+  }
+}
+
+function questionSummary(q){
+  if(q.word) return 'Word: "'+q.word+'"';
+  if(q.context) return q.context.substring(0,50)+"...";
+  if(q.question) return q.question.substring(0,50)+"...";
+  return "Question";
+}
+
+function showFeedback(isCorrect,msg){
+  const fb=document.getElementById("feedback");
+  fb.textContent=(isCorrect?"✅ Correct! ":"❌ Not quite — ")+(msg||"");
+  fb.className="feedback show "+(isCorrect?"ok":"bad");
+  const q=questions[qi];
+  if(!isCorrect&&q.explanation&&cat!=="spell"){
+    const ex=document.getElementById("explanation");
+    ex.textContent="💡 "+q.explanation;
+    ex.className="explanation show";
+  }
+  document.getElementById("checkBtn").style.display="none";
+  document.getElementById("nextBtn").style.display="inline-flex";
+  document.getElementById("hintBtn").style.display="none";
+  document.getElementById("qsCorrect").textContent=correct;
+  document.getElementById("qsWrong").textContent=wrong;
+  const att=correct+wrong;
+  document.getElementById("qsAcc").textContent=att?Math.round(correct/att*100)+"%":"—";
+}
+
+function showHint(){
+  const q=questions[qi];
+  if(!q.hint) return;
+  hintCount++;
+  const hb=document.getElementById("hintBox");
+  hb.textContent="💡 Hint: "+q.hint;
+  hb.className="hint-box show";
+  document.getElementById("hintBtn").disabled=true;
+}
+
+function nextQuestion(){
+  qi++;
+  if(qi>=questions.length) showResult();
+  else loadQuestion();
+}
+
+function showResult(){
+  const total=questions.length;
+  const pct=Math.round((correct/total)*100);
+  const passed=pct>=PASS_PCT;
+  if(passed){
+    progress[cat][level].done=true;
+    if(pct>progress[cat][level].score) progress[cat][level].score=pct;
+    if(level<CATS[cat].levels) progress[cat][level+1].unlocked=true;
+  }
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({v:3,progress}));}catch{}
+  updateSaveLbl();
+  document.getElementById("resEmoji").textContent=passed?(pct===100?"🏆":"🌟"):"💪";
+  document.getElementById("resTitle").textContent=passed?"You Passed!":"Keep Practicing!";
+  document.getElementById("resPct").textContent=pct+"%";
+  document.getElementById("resPct").style.color=passed?"#00b894":"#FC5C65";
+  document.getElementById("resStars").textContent=pct>=90?"⭐⭐⭐":pct>=70?"⭐⭐":"⭐";
+  document.getElementById("resMsg").innerHTML=passed
+    ?"Amazing! You got <b>"+correct+"</b> out of <b>"+total+"</b> correct."+(level<CATS[cat].levels?" You unlocked the next level! 🚀":"")
+    :"You got <b>"+correct+"</b> out of <b>"+total+"</b> correct.<br>You need <b>"+PASS_PCT+"%</b> to unlock the next level. Review your mistakes and try again!";
+  const ms=document.getElementById("mistakeSection");
+  if(mistakes.length>0){
+    ms.innerHTML='<div class="mistake-title">📝 Review Your Mistakes:</div>'+mistakes.map(function(m){
+      return '<div class="mistake-item"><div class="mi-q">'+m.q+'</div>'+(m.exp?'<div class="mi-how">'+m.exp+'</div>':'')+'</div>';
+    }).join("");
+  } else ms.innerHTML="";
+  document.getElementById("retryBtn").onclick=function(){startLevel(level);};
+  const nb=document.getElementById("nextLvBtn");
+  if(passed&&level<CATS[cat].levels){
+    nb.style.display="inline-flex";
+    nb.onclick=function(){startLevel(level+1);};
+  } else nb.style.display="none";
+  showScreen("resultScreen");
+}
+
+(function init(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){const d=JSON.parse(raw);if(d.v===3&&d.progress)progress=d.progress;}
+  }catch{}
+  initProgress();
+  updateSaveLbl();
+})();
+</script>
 </body>
 </html>
