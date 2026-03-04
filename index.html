@@ -3,113 +3,706 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Reading Adventure – 2nd Grade (no level locks)</title>
+<title>📚 Reading Adventure – Dark Mode</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);min-height:100vh;padding:16px}
-.wrap{max-width:720px;margin:0 auto}
-.topbar{background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,0.3);border-radius:16px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;position:sticky;top:8px;z-index:100}
-.topbar-title{font-size:1.15rem;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3)}
-.topbar-btns{display:flex;gap:8px;flex-wrap:wrap}
-.tb-btn{padding:6px 14px;border:none;border-radius:20px;font-weight:800;font-size:0.8rem;cursor:pointer;transition:transform 0.1s}
-.tb-btn:hover{transform:scale(1.05)}
-.tb-save{background:#FFD93D;color:#2D3561}
-.tb-load{background:#6BCB77;color:#fff}
-.tb-lbl{font-size:0.72rem;color:rgba(255,255,255,0.7)}
-.screen{display:none}
-.screen.active{display:block}
-.home-hero{text-align:center;padding:20px 0 14px}
-.home-hero h1{font-size:2.2rem;font-weight:900;color:#fff;text-shadow:0 3px 8px rgba(0,0,0,0.3)}
-.home-hero p{color:rgba(255,255,255,0.85);font-size:0.95rem;margin-top:6px}
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:14px}
-.menu-card{background:#fff;border-radius:20px;padding:22px 12px;text-align:center;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.15);transition:transform 0.15s;border:3px solid transparent}
-.menu-card:hover{transform:translateY(-4px)}
-.menu-card.vocab{border-color:#00cec9}.menu-card.seq{border-color:#fd79a8}.menu-card.comp{border-color:#a29bfe}.menu-card.spell{border-color:#fdcb6e}
-.mc-icon{font-size:2.4rem;margin-bottom:10px}
-.mc-name{font-weight:900;font-size:1rem;color:#2D3561}
-.mc-desc{font-size:0.78rem;color:#666;line-height:1.4;margin:6px 0}
-.mc-badge{display:inline-block;background:#6c5ce7;color:#fff;border-radius:14px;padding:3px 12px;font-size:0.7rem;font-weight:800}
-.levels-wrap{background:rgba(255,255,255,0.95);border-radius:20px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:12px}
-.levels-title{font-size:1.3rem;font-weight:900;color:#2D3561;margin-bottom:16px;text-align:center}
-.levels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
-.lv-btn{background:linear-gradient(135deg,#74b9ff,#0984e3);color:#fff;border:none;border-radius:14px;padding:14px 4px;cursor:pointer;text-align:center;font-weight:800;font-size:0.85rem;transition:transform 0.15s;position:relative}
-.lv-btn:hover{transform:translateY(-3px)}
-.lv-btn.done{background:linear-gradient(135deg,#00cec9,#00a085)}
-.lv-icon{font-size:1.6rem;display:block;margin-bottom:4px}
-.lv-score{font-size:0.68rem;opacity:0.85;margin-top:3px}
-.quiz-head{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
-.quiz-meta{display:flex;justify-content:space-between;font-size:0.82rem;color:#666;margin-bottom:8px}
-.quiz-score-row{display:flex;gap:14px}
-.qs-item{text-align:center;flex:1}
-.qs-label{font-size:0.7rem;color:#888}
-.qs-val{font-size:1.3rem;font-weight:900;color:#2D3561}
-.prog-bar{background:#e0e0e0;border-radius:8px;height:10px;margin-top:8px}
-.prog-fill{height:100%;border-radius:8px;transition:width 0.4s;background:linear-gradient(90deg,#00cec9,#6c5ce7)}
-.q-card{background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 24px rgba(0,0,0,0.1);margin-bottom:12px;border-top:5px solid #6c5ce7}
-.q-type-badge{display:inline-block;background:#6c5ce7;color:#fff;border-radius:14px;padding:3px 12px;font-size:0.72rem;font-weight:800;margin-bottom:10px}
-.q-text{font-size:1.05rem;font-weight:700;color:#2D3561;line-height:1.55;margin-bottom:6px}
-.q-passage{background:#f0f8ff;border-left:4px solid #74b9ff;border-radius:8px;padding:12px;font-size:0.92rem;color:#2D3561;margin-bottom:12px}
-.q-word{font-size:2rem;font-weight:900;color:#0984e3;text-align:center;margin:10px 0}
-.q-story{background:#fff9e6;border-left:4px solid #fdcb6e;border-radius:8px;padding:12px;font-size:1rem;color:#2D3561;margin-bottom:12px}
-.options{display:grid;gap:10px;margin-top:10px}
-.options.two-col{grid-template-columns:1fr 1fr}
-.opt-btn{background:#fff;border:2px solid #b0b8d0;border-radius:12px;padding:12px 16px;font-size:0.95rem;font-weight:600;color:#2D3561;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.15s;width:100%}
-.opt-btn:hover:not(:disabled){border-color:#6c5ce7;background:#f0eeff}
-.opt-btn:disabled{cursor:not-allowed;opacity:0.75}
-.opt-btn.correct{background:#d4edda;border-color:#6BCB77;color:#155724}
-.opt-btn.wrong{background:#f8d7da;border-color:#FC5C65;color:#721c24}
-.opt-letter{width:30px;height:30px;border-radius:50%;background:#6c5ce7;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.8rem}
-.opt-btn.correct .opt-letter{background:#6BCB77}
-.opt-btn.wrong .opt-letter{background:#FC5C65}
-.spell-hint-img{font-size:3.5rem;text-align:center;margin:8px 0}
-.spell-blanks{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:12px 0}
-.spell-blank{width:36px;height:40px;border-bottom:3px solid #6c5ce7;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#2D3561}
-.letter-bank{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
-.letter-tile{width:38px;height:38px;border:2px solid #6c5ce7;border-radius:10px;background:#fff;font-size:1.1rem;font-weight:900;color:#2D3561;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.letter-tile:hover{background:#f0eeff;transform:scale(1.1)}
-.letter-tile.used{opacity:0.25;pointer-events:none}
-.spell-input{font-size:1.2rem;font-weight:900;color:#2D3561;text-align:center;letter-spacing:6px;padding:10px;border:2px solid #ddd;border-radius:12px;width:100%;outline:none;margin-top:8px}
-.spell-input:focus{border-color:#6c5ce7}
-.feedback{border-radius:12px;padding:12px 16px;font-weight:800;margin:10px 0;display:none}
-.feedback.show{display:block}
-.feedback.ok{background:#d4edda;border:2px solid #6BCB77;color:#155724}
-.feedback.bad{background:#f8d7da;border:2px solid #FC5C65;color:#721c24}
-.explanation{background:#FFF9C4;border:2px dashed #FFD93D;border-radius:12px;padding:12px;font-size:0.88rem;color:#7a5c00;font-weight:700;margin:8px 0;display:none}
-.explanation.show{display:block}
-.hint-box{background:#e3f2fd;border-left:4px solid #2196f3;border-radius:8px;padding:10px 14px;font-size:0.88rem;color:#1565c0;font-weight:700;margin:8px 0;display:none}
-.hint-box.show{display:block}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.btn{padding:11px 18px;border:none;border-radius:12px;font-weight:900;font-size:0.9rem;cursor:pointer;transition:transform 0.1s}
-.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
-.btn-check{background:#6c5ce7;color:#fff;flex:1}
-.btn-next{background:#00b894;color:#fff;flex:1;display:none}
-.btn-hint{background:#FFD93D;color:#2D3561}
-.btn-back{background:#e0e0e0;color:#555}
-.btn-audio{background:#fdcb6e;color:#2D3561;font-size:1.2rem;padding:8px 15px}
-.result-card{background:#fff;border-radius:20px;padding:28px;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,0.15);margin-top:12px}
-.result-emoji{font-size:4rem;margin-bottom:10px}
-.result-title{font-size:1.8rem;font-weight:900;color:#2D3561}
-.result-pct{font-size:3rem;font-weight:900;margin:8px 0}
-.result-stars{font-size:2rem;margin:8px 0}
-.result-msg{background:#f8f9fa;border-radius:12px;padding:14px;font-size:0.92rem;color:#555;font-weight:700;margin:12px 0}
-.mistake-section{text-align:left;margin:12px 0}
-.mistake-title{font-weight:900;color:#FC5C65;margin-bottom:8px}
-.mistake-item{background:#fff5f5;border:2px solid #ffcdd2;border-radius:10px;padding:10px;margin-bottom:8px;font-size:0.85rem}
-.mi-q{font-weight:800;color:#c62828}
-.mi-how{color:#555;margin-top:3px}
-.progress-chart{background:#fff;border-radius:12px;padding:15px;margin-top:15px;text-align:left}
-.progress-bar-cont{background:#e0e0e0;border-radius:10px;height:20px;margin:8px 0}
-.progress-bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#00cec9,#6c5ce7);width:0%}
-@media(max-width:480px){
-  .two-col{grid-template-columns:1fr}
-  .home-hero h1{font-size:1.7rem}
-  .menu-grid{grid-template-columns:repeat(2,1fr)}
-}
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    background: linear-gradient(145deg, #0f0c1a 0%, #1a1530 80%, #231c3a 100%);
+    min-height: 100vh;
+    padding: 16px;
+    color: #f0eaff;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Top bar - glass dark */
+  .topbar {
+    background: rgba(25, 20, 40, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid #5f4b9e;
+    border-radius: 20px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 8px;
+    z-index: 100;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+  }
+
+  .topbar-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #d9b8ff;
+    text-shadow: 0 0 8px #a37bd4;
+  }
+
+  .topbar-btns {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tb-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .tb-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .tb-save {
+    background: #FFD93D;
+    color: #1a0f2a;
+  }
+
+  .tb-load {
+    background: #6BCB77;
+    color: #0f0a1a;
+  }
+
+  .tb-lbl {
+    font-size: 0.75rem;
+    color: #b8a6e6;
+  }
+
+  /* Screens */
+  .screen {
+    display: none;
+  }
+
+  .screen.active {
+    display: block;
+  }
+
+  /* Home screen */
+  .home-hero {
+    text-align: center;
+    padding: 20px 0 16px;
+  }
+
+  .home-hero h1 {
+    font-size: 2.4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #FFD93D, #C77DFF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px #9f7aea;
+    margin-bottom: 8px;
+  }
+
+  .home-hero p {
+    color: #cdc2f0;
+    font-size: 1rem;
+  }
+
+  /* Menu grid */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .menu-card {
+    background: #221e38;
+    border-radius: 24px;
+    padding: 24px 12px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+    transition: transform 0.15s, border 0.15s;
+    border: 2px solid transparent;
+    border-bottom: 5px solid;
+  }
+
+  .menu-card:hover {
+    transform: translateY(-5px);
+    border-color: #b392f0;
+  }
+
+  .menu-card.vocab { border-bottom-color: #5fd9d0; }
+  .menu-card.seq { border-bottom-color: #fc92b0; }
+  .menu-card.comp { border-bottom-color: #ae95f5; }
+  .menu-card.spell { border-bottom-color: #f5b342; }
+
+  .mc-icon {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+  }
+
+  .mc-name {
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #f0eaff;
+    margin-bottom: 4px;
+  }
+
+  .mc-desc {
+    font-size: 0.8rem;
+    color: #b8aae6;
+    margin-bottom: 10px;
+  }
+
+  .mc-badge {
+    display: inline-block;
+    background: #392f5a;
+    color: #d4c2ff;
+    border-radius: 30px;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+  }
+
+  /* Progress chart */
+  .progress-chart {
+    background: #1e1932;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 28px;
+    border: 1px solid #504574;
+  }
+
+  .progress-bar-cont {
+    background: #332e47;
+    border-radius: 12px;
+    height: 22px;
+    margin: 12px 0 8px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #9b87e6, #cc88ff);
+    width: 0%;
+    transition: width 0.4s;
+  }
+
+  /* Levels screen */
+  .levels-wrap {
+    background: #1e1932;
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid #5a4c82;
+  }
+
+  .levels-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #cfbef5;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .lv-btn {
+    background: linear-gradient(145deg, #2b2440, #1f1a30);
+    color: #e3d0ff;
+    border: 2px solid #4d3f70;
+    border-radius: 16px;
+    padding: 16px 4px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    transition: 0.15s;
+  }
+
+  .lv-btn:hover {
+    transform: translateY(-3px);
+    border-color: #b48aff;
+    background: #352e4d;
+  }
+
+  .lv-btn.done {
+    background: #2d3b41;
+    border-color: #6bcb77;
+    color: #b4ffb4;
+  }
+
+  .lv-icon {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .lv-score {
+    font-size: 0.7rem;
+    opacity: 0.9;
+    margin-top: 3px;
+    color: #FFD93D;
+  }
+
+  /* Quiz header */
+  .quiz-head {
+    background: #1e1932;
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #5a4c82;
+  }
+
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    color: #b7a9e6;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
+
+  .quiz-score-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .qs-item {
+    text-align: center;
+    flex: 1;
+  }
+
+  .qs-label {
+    font-size: 0.7rem;
+    color: #aea0d9;
+  }
+
+  .qs-val {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+  }
+
+  .prog-bar {
+    background: #2f274a;
+    border-radius: 8px;
+    height: 10px;
+  }
+
+  .prog-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #a37bf0, #dd95ff);
+    transition: width 0.4s;
+  }
+
+  /* Question card */
+  .q-card {
+    background: #221e38;
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 16px;
+    border: 1px solid #5b4d87;
+    border-top: 6px solid #6c5ce7;
+  }
+
+  .q-type-badge {
+    display: inline-block;
+    background: #362d55;
+    color: #e4d2ff;
+    border-radius: 30px;
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .q-passage {
+    background: #1b1729;
+    border-left: 5px solid #a27de8;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 0.95rem;
+    color: #ddd2ff;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .q-story {
+    background: #2f2742;
+    border-left: 5px solid #ffa07a;
+    border-radius: 10px;
+    padding: 14px;
+    color: #f7dfb5;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .q-word {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #e5b3ff;
+    text-align: center;
+    margin: 16px 0;
+    letter-spacing: 2px;
+  }
+
+  .q-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f0eaff;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* Options */
+  .options {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  .options.two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .opt-btn {
+    background: #2c253f;
+    border: 2px solid #5d4d85;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f0e9ff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.15s;
+    width: 100%;
+  }
+
+  .opt-btn:hover:not(:disabled) {
+    border-color: #b595ff;
+    background: #3f3562;
+  }
+
+  .opt-btn:disabled {
+    opacity: 0.7;
+    cursor: default;
+  }
+
+  .opt-btn.correct {
+    background: #1c472c;
+    border-color: #6bcb77;
+    color: #d1ffd1;
+  }
+
+  .opt-btn.wrong {
+    background: #582b35;
+    border-color: #ff7373;
+    color: #ffc9c9;
+  }
+
+  .opt-letter {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #5f4b96;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+  }
+
+  /* Spelling */
+  .spell-blanks {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+
+  .spell-blank {
+    width: 45px;
+    height: 50px;
+    border-bottom: 4px solid #c394ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #ffe1b0;
+    text-transform: uppercase;
+  }
+
+  .letter-bank {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  .letter-tile {
+    width: 45px;
+    height: 45px;
+    background: #312b48;
+    border: 2px solid #9f82d0;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #ffe6b0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+  }
+
+  .letter-tile:hover {
+    background: #4a3d6b;
+    transform: scale(1.1);
+  }
+
+  .letter-tile.used {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  .spell-input {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.3rem;
+    background: #1f1937;
+    border: 3px solid #4e4280;
+    border-radius: 16px;
+    color: #FFD93D;
+    text-align: center;
+    letter-spacing: 4px;
+    margin-top: 12px;
+  }
+
+  .spell-input:focus {
+    border-color: #C77DFF;
+    outline: none;
+  }
+
+  /* Hint and feedback */
+  .hint-box {
+    background: #2e2550;
+    border-left: 6px solid #FFD93D;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 12px 0;
+    color: #ffe6b3;
+    font-weight: 700;
+    display: none;
+  }
+
+  .hint-box.show {
+    display: block;
+  }
+
+  .feedback {
+    border-radius: 12px;
+    padding: 14px;
+    margin: 12px 0;
+    font-weight: 700;
+    display: none;
+  }
+
+  .feedback.show {
+    display: block;
+  }
+
+  .feedback.ok {
+    background: #1d4a2a;
+    border: 2px solid #6BCB77;
+    color: #c3f0c3;
+  }
+
+  .feedback.bad {
+    background: #5a2e36;
+    border: 2px solid #FF6B6B;
+    color: #ffcfcf;
+  }
+
+  .explanation {
+    background: #2d2a3a;
+    border: 2px dashed #C77DFF;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 12px 0;
+    color: #e5d5ff;
+    display: none;
+  }
+
+  .explanation.show {
+    display: block;
+  }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+  }
+
+  .btn-check {
+    background: #C77DFF;
+    color: white;
+    flex: 1;
+  }
+
+  .btn-next {
+    background: #6BCB77;
+    color: #0f0a1a;
+    flex: 1;
+    display: none;
+  }
+
+  .btn-hint {
+    background: #FFD93D;
+    color: #1a0f2a;
+  }
+
+  .btn-back {
+    background: #3a3260;
+    color: white;
+  }
+
+  .btn-audio {
+    background: #f5b342;
+    color: #1a0f2a;
+    font-size: 1.2rem;
+    padding: 8px 16px;
+  }
+
+  /* Result screen */
+  .result-card {
+    background: #1e1932;
+    border-radius: 28px;
+    padding: 28px;
+    text-align: center;
+    border: 2px solid #6b5b99;
+    margin-top: 16px;
+  }
+
+  .result-emoji {
+    font-size: 4.5rem;
+    margin-bottom: 10px;
+  }
+
+  .result-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #FFD93D;
+  }
+
+  .result-pct {
+    font-size: 3rem;
+    font-weight: 900;
+    color: white;
+    margin: 10px 0;
+  }
+
+  .result-stars {
+    font-size: 2rem;
+    color: #FFD93D;
+    margin: 10px 0;
+  }
+
+  .result-msg {
+    background: #2a2440;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    color: #e0d2ff;
+  }
+
+  .mistake-section {
+    text-align: left;
+    margin: 20px 0;
+  }
+
+  .mistake-title {
+    font-weight: 900;
+    color: #ffb3b3;
+    margin-bottom: 12px;
+  }
+
+  .mistake-item {
+    background: #2f253a;
+    border: 2px solid #c45d5d;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .mi-q {
+    font-weight: 800;
+    color: #ffb3b3;
+  }
+
+  .mi-how {
+    color: #b8aae6;
+    margin-top: 6px;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    .options.two-col {
+      grid-template-columns: 1fr;
+    }
+    
+    .home-hero h1 {
+      font-size: 1.8rem;
+    }
+    
+    .menu-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-title">📚 Reading Adventure</div>
   <div class="topbar-btns">
@@ -120,11 +713,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
   <div class="tb-lbl" id="saveLbl">No saves yet</div>
 </div>
 
-<div class="screen active" id="homeScreen">
+<!-- HOME SCREEN -->
+<div id="homeScreen" class="screen active">
   <div class="home-hero">
     <h1>📖 Reading Adventure</h1>
     <p>Pick any skill, any level – play freely!</p>
   </div>
+  
   <div class="menu-grid">
     <div class="menu-card vocab" onclick="openCategory('vocab')">
       <div class="mc-icon">🔤</div>
@@ -151,20 +746,27 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
       <div class="mc-badge">5 levels</div>
     </div>
   </div>
-  <div class="progress-chart" id="progressChart"></div>
+  
+  <div class="progress-chart" id="progressChart">
+    <h3 style="color:#d4c2ff; margin-bottom:12px;">📊 Your Progress</h3>
+    <div id="progressStats">0 of 20 levels mastered (0%)</div>
+    <div class="progress-bar-cont"><div class="progress-bar-fill" id="progressBarFill" style="width:0%"></div></div>
+  </div>
 </div>
 
-<div class="screen" id="levelsScreen">
+<!-- LEVELS SCREEN -->
+<div id="levelsScreen" class="screen">
   <div class="levels-wrap">
     <div class="levels-title" id="levelsTitle">Choose a Level</div>
     <div class="levels-grid" id="levelsGrid"></div>
-    <div style="margin-top:14px;text-align:center">
-      <button class="btn btn-back" onclick="showHome()">← Back</button>
+    <div style="text-align:center; margin-top:16px;">
+      <button class="btn btn-back" onclick="showHome()">← Back to Home</button>
     </div>
   </div>
 </div>
 
-<div class="screen" id="quizScreen">
+<!-- QUIZ SCREEN -->
+<div id="quizScreen" class="screen">
   <div class="quiz-head">
     <div class="quiz-meta">
       <span id="quizLabel">Category • Level</span>
@@ -177,10 +779,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
     </div>
     <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
   </div>
+  
   <div class="q-card" id="qCard"></div>
   <div class="hint-box" id="hintBox"></div>
   <div class="feedback" id="feedback"></div>
   <div class="explanation" id="explanation"></div>
+  
   <div class="btn-row">
     <button class="btn btn-back" onclick="leaveQuiz()">🏠 Home</button>
     <button class="btn btn-hint" id="hintBtn" onclick="showHint()">💡 Hint</button>
@@ -190,15 +794,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
   </div>
 </div>
 
-<div class="screen" id="resultScreen">
+<!-- RESULT SCREEN -->
+<div id="resultScreen" class="screen">
   <div class="result-card">
-    <div class="result-emoji" id="resEmoji"></div>
-    <div class="result-title" id="resTitle"></div>
-    <div class="result-pct" id="resPct"></div>
-    <div class="result-stars" id="resStars"></div>
+    <div class="result-emoji" id="resEmoji">🏆</div>
+    <div class="result-title" id="resTitle">Great Job!</div>
+    <div class="result-pct" id="resPct">0%</div>
+    <div class="result-stars" id="resStars">⭐⭐⭐</div>
     <div class="result-msg" id="resMsg"></div>
     <div class="mistake-section" id="mistakeSection"></div>
-    <div class="btn-row" style="justify-content:center;margin-top:16px">
+    <div class="btn-row" style="justify-content:center; margin-top:20px;">
       <button class="btn btn-back" id="retryBtn">🔁 Try Again</button>
       <button class="btn btn-check" onclick="showHome()">🏠 Home</button>
       <button class="btn btn-next" id="nextLvBtn" style="display:none">➡ Next Level</button>
@@ -209,437 +814,628 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
 </div>
 
 <script>
-// ========== dynamic generators – same as before (shortened for clarity, full functionality) ==========
-function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
-function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+// ==================== READING ADVENTURE DATA ====================
+const PASS_PCT = 70;
+const CATEGORIES = {
+  vocab: { name: 'Vocabulary', icon: '🔤', color: '#5fd9d0', levels: 5 },
+  seq: { name: 'Sequencing', icon: '📝', color: '#fc92b0', levels: 5 },
+  comp: { name: 'Comprehension', icon: '📖', color: '#ae95f5', levels: 5 },
+  spell: { name: 'Spelling', icon: '✏️', color: '#f5b342', levels: 5 }
+};
 
-function vocabBank(lvl){
-  const banks={
-    1:[
-      {word:"happy",meaning:"feeling or showing joy",hint:"😊 When you get a gift"},
-      {word:"big",meaning:"large in size",hint:"🐘 An elephant is"},
-      {word:"fast",meaning:"moving quickly",hint:"🏃 A cheetah"},
-      {word:"cold",meaning:"low temperature",hint:"❄️ Ice cream"},
-      {word:"friend",meaning:"person you like",hint:"👫 Someone you play with"}
-    ],
-    2:[
-      {word:"enormous",meaning:"very large",hint:"🦕 Dinosaur sized"},
-      {word:"delicious",meaning:"tastes great",hint:"😋 Pizza is"},
-      {word:"frightened",meaning:"very scared",hint:"😱 How you feel during a storm"},
-      {word:"giggle",meaning:"laugh in a silly way",hint:"😂 At a funny joke"}
-    ],
-    3:[
-      {word:"magnificent",meaning:"very beautiful",hint:"🏰 A castle"},
-      {word:"observe",meaning:"watch carefully",hint:"🔬 Scientists"},
-      {word:"patient",meaning:"able to wait calmly",hint:"⏳ In a long line"},
-      {word:"rare",meaning:"not common",hint:"💎 A diamond"}
-    ],
-    4:[
-      {word:"persevere",meaning:"keep trying",hint:"💪 Never give up"},
-      {word:"reluctant",meaning:"unwilling",hint:"😒 Doing chores"},
-      {word:"transparent",meaning:"clear",hint:"🪟 Window"},
-      {word:"exhausted",meaning:"very tired",hint:"😴 After a marathon"}
-    ],
-    5:[
-      {word:"benevolent",meaning:"kind",hint:"👑 A good king"},
-      {word:"eloquent",meaning:"well‑spoken",hint:"🎤 Great speaker"},
-      {word:"perseverance",meaning:"determination",hint:"🧗 Climbing a mountain"},
-      {word:"innovation",meaning:"new idea",hint:"💡 Smartphone"}
-    ]
-  };
-  let pool = banks[lvl] || banks[1];
-  let words = shuffle([...pool]);
-  let qs=[];
-  for(let w of words.slice(0,10)){
-    let wrongs = shuffle(pool.map(p=>p.meaning).filter(m=>m!==w.meaning)).slice(0,3);
-    let opts = shuffle([w.meaning, ...wrongs]);
-    qs.push({
-      word:w.word, emoji:w.hint[0], options:opts, correct:opts.indexOf(w.meaning),
-      hint:w.hint, explanation:`"${w.word}" means ${w.meaning}.`
-    });
-  }
-  return qs.slice(0,10);
-}
+// Progress tracking
+let progress = {};
+let currentCategory = '';
+let currentLevel = 1;
+let questions = [];
+let qIndex = 0;
+let score = 0;
+let wrong = 0;
+let mistakes = [];
+let hintsUsed = 0;
+let answered = false;
+let spellAnswer = '';
+let spellTiles = [];
 
-function seqBank(lvl){
-  let base=[
-    {start:"Tom woke up hungry.", next:"He went to the kitchen.", wrong:["He slept more.","He watched TV.","He played outside."]},
-    {start:"Sky grew dark, thunder rumbled.", next:"Rain began to fall.", wrong:["Sun came out.","Birds sang.","Kids went to beach."]},
-    {start:"Sarah opened her coloring book.", next:"She picked up crayons.", wrong:["She slept.","She ate dinner.","She watched a movie."]},
-    {start:"Ben's ice cream melted.", next:"He ate it quickly.", wrong:["He froze it.","He threw it.","He gave it away."]},
-    {start:"Candles were lit on the cake.", next:"Everyone sang Happy Birthday.", wrong:["Everyone left.","Everyone cried.","Everyone ate pizza."]},
-    {start:"Puppy barked at the door.", next:"Someone arrived.", wrong:["It went to sleep.","It ate food.","It played with a toy."]}
-  ];
-  shuffle(base);
-  let qs=[];
-  for(let s of base.slice(0,10)){
-    let opts = shuffle([s.next, ...s.wrong]);
-    qs.push({
-      context:s.start, options:opts, correct:opts.indexOf(s.next),
-      hint:"Think what would naturally happen next.",
-      explanation:`After "${s.start}", the next logical step is "${s.next}".`
-    });
-  }
-  return qs;
-}
-
-function compBank(lvl){
-  let passages={
-    1:[
-      {text:"Sam has a red ball. He plays with it in the park. His dog Max chases it.",
-       q:[{q:"What color is Sam's ball?",a:"Red",w:["Blue","Green","Yellow"]},
-          {q:"Where does Sam play?",a:"In the park",w:["At home","At school","In the pool"]}]},
-      {text:"Today is Mia's birthday. She is seven. There will be cake.",
-       q:[{q:"How old is Mia?",a:"Seven",w:["Six","Eight","Five"]},
-          {q:"What will there be?",a:"Cake",w:["Pizza","Ice cream","Candy"]}]}
-    ],
-    2:[
-      {text:"The Great Barrier Reef is off Australia. Many fish live there. Warming harms it.",
-       q:[{q:"Where is it?",a:"Off Australia",w:["Africa","Japan","USA"]},
-          {q:"What harms it?",a:"Warming",w:["Fish","Tourists","Ships"]}]}
-    ],
-    3:[
-      {text:"Rainforests cover 6% of Earth, but hold half its species. They produce oxygen.",
-       q:[{q:"How much of Earth do rainforests cover?",a:"6%",w:["20%","50%","12%"]},
-          {q:"What do they produce?",a:"Oxygen",w:["Carbon","Water","Sugar"]}]}
-    ],
-    4:[
-      {text:"Industrial Revolution began in Britain. Society moved to factory work.",
-       q:[{q:"Where did it begin?",a:"In Britain",w:["America","France","Germany"]},
-          {q:"What did society move to?",a:"Factory work",w:["Farming","Mining","Sailing"]}]}
-    ],
-    5:[
-      {text:"AI can analyze data and detect diseases. Concerns include bias and job loss.",
-       q:[{q:"What can AI detect?",a:"Diseases",w:["Weather","Money","Emotions"]},
-          {q:"One concern is?",a:"Bias",w:["Speed","Cost","Size"]}]}
-    ]
-  };
-  let pool = passages[lvl] || passages[1];
-  let qs=[];
-  for(let p of shuffle(pool)){
-    for(let q of shuffle(p.q).slice(0,2)){
-      let opts = shuffle([q.a, ...q.w]);
-      qs.push({
-        passage:p.text, question:q.q, options:opts, correct:opts.indexOf(q.a),
-        hint:"Look back at the passage.", explanation:`The passage says: "${p.text}". So "${q.a}" is correct.`
-      });
+// Initialize progress
+function initProgress() {
+  for (let cat in CATEGORIES) {
+    if (!progress[cat]) progress[cat] = {};
+    for (let lvl = 1; lvl <= CATEGORIES[cat].levels; lvl++) {
+      if (!progress[cat][lvl]) {
+        progress[cat][lvl] = { completed: false, score: 0 };
+      }
     }
   }
-  return shuffle(qs).slice(0,10);
+}
+initProgress();
+
+// ==================== HELPER FUNCTIONS ====================
+function rnd(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function spellBank(lvl){
-  let words={
-    1:["cat","dog","sun","big","run","hat","map","bed","fun","bug"],
-    2:["happy","funny","sunny","puppy","candy","daisy","rainy","sleep"],
-    3:["friend","night","light","chair","train","cloud","bread","heart"],
-    4:["library","dolphin","kitchen","blanket","journey","penguin","thunder"],
-    5:["beautiful","discover","adventure","chocolate","important","celebrate","wonderful"]
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ==================== QUESTION BANKS ====================
+function getVocabQuestions(level) {
+  const banks = {
+    1: [
+      { word: 'happy', meaning: 'feeling joy', hint: '😊 When you smile' },
+      { word: 'big', meaning: 'large in size', hint: '🐘 An elephant' },
+      { word: 'fast', meaning: 'moving quickly', hint: '🏃 A cheetah' },
+      { word: 'friend', meaning: 'person you like', hint: '👫 Someone you play with' }
+    ],
+    2: [
+      { word: 'enormous', meaning: 'very large', hint: '🦕 Dinosaur sized' },
+      { word: 'delicious', meaning: 'tastes great', hint: '😋 Pizza' },
+      { word: 'frightened', meaning: 'very scared', hint: '😱 During a storm' }
+    ],
+    3: [
+      { word: 'magnificent', meaning: 'very beautiful', hint: '🏰 A castle' },
+      { word: 'observe', meaning: 'watch carefully', hint: '🔬 Scientists' },
+      { word: 'patient', meaning: 'able to wait', hint: '⏳ In a long line' }
+    ],
+    4: [
+      { word: 'persevere', meaning: 'keep trying', hint: '💪 Never give up' },
+      { word: 'reluctant', meaning: 'unwilling', hint: '😒 Doing chores' },
+      { word: 'exhausted', meaning: 'very tired', hint: '😴 After a marathon' }
+    ],
+    5: [
+      { word: 'benevolent', meaning: 'kind', hint: '👑 A good king' },
+      { word: 'eloquent', meaning: 'well-spoken', hint: '🎤 Great speaker' },
+      { word: 'innovation', meaning: 'new idea', hint: '💡 Smartphone' }
+    ]
   };
-  let wl = shuffle(words[lvl] || words[1]).slice(0,10);
-  return wl.map(w=>({
-    word:w, emoji:"🔤", hint:`Spell the word`, explanation:`"${w}" is spelled ${w.split('').join('-')}.`
+  
+  let pool = banks[level] || banks[1];
+  let questions = [];
+  
+  pool.forEach(item => {
+    let wrongs = pool.map(w => w.meaning).filter(m => m !== item.meaning);
+    while (wrongs.length < 3) wrongs.push('not sure');
+    wrongs = shuffle(wrongs).slice(0, 3);
+    let options = shuffle([item.meaning, ...wrongs]);
+    
+    questions.push({
+      word: item.word,
+      options: options,
+      correct: options.indexOf(item.meaning),
+      hint: item.hint,
+      explanation: `"${item.word}" means ${item.meaning}`
+    });
+  });
+  
+  return shuffle(questions).slice(0, 10);
+}
+
+function getSeqQuestions(level) {
+  const stories = [
+    { start: 'Tom woke up hungry.', next: 'He went to the kitchen.', wrong: ['He slept more', 'He watched TV', 'He played outside'] },
+    { start: 'Sky grew dark, thunder rumbled.', next: 'Rain began to fall.', wrong: ['Sun came out', 'Birds sang', 'Kids went swimming'] },
+    { start: 'Sarah opened her coloring book.', next: 'She picked up crayons.', wrong: ['She slept', 'She ate dinner', 'She watched a movie'] },
+    { start: 'Ben\'s ice cream melted.', next: 'He ate it quickly.', wrong: ['He froze it', 'He threw it', 'He gave it away'] },
+    { start: 'Candles were lit on the cake.', next: 'Everyone sang Happy Birthday.', wrong: ['Everyone left', 'Everyone cried', 'Everyone ate pizza'] },
+    { start: 'Puppy barked at the door.', next: 'Someone arrived.', wrong: ['It went to sleep', 'It ate food', 'It played with a toy'] }
+  ];
+  
+  return shuffle(stories).slice(0, 10).map(s => {
+    let options = shuffle([s.next, ...s.wrong]);
+    return {
+      context: s.start,
+      options: options,
+      correct: options.indexOf(s.next),
+      hint: 'Think what would naturally happen next',
+      explanation: `After "${s.start}", the next step is "${s.next}"`
+    };
+  });
+}
+
+function getCompQuestions(level) {
+  const passages = {
+    1: [
+      { text: 'Sam has a red ball. He plays with it in the park. His dog Max chases it.',
+        q: 'What color is Sam\'s ball?', a: 'Red', w: ['Blue', 'Green', 'Yellow'] },
+      { text: 'Today is Mia\'s birthday. She is seven. There will be cake.',
+        q: 'How old is Mia?', a: 'Seven', w: ['Six', 'Eight', 'Five'] }
+    ],
+    2: [
+      { text: 'The Great Barrier Reef is off Australia. Many fish live there.',
+        q: 'Where is the reef?', a: 'Off Australia', w: ['Africa', 'Japan', 'USA'] }
+    ],
+    3: [
+      { text: 'Rainforests cover 6% of Earth, but hold half its species.',
+        q: 'How much of Earth do rainforests cover?', a: '6%', w: ['20%', '50%', '12%'] }
+    ],
+    4: [
+      { text: 'Industrial Revolution began in Britain. Society moved to factory work.',
+        q: 'Where did it begin?', a: 'In Britain', w: ['America', 'France', 'Germany'] }
+    ],
+    5: [
+      { text: 'AI can analyze data and detect diseases. Concerns include bias.',
+        q: 'What can AI detect?', a: 'Diseases', w: ['Weather', 'Money', 'Emotions'] }
+    ]
+  };
+  
+  let pool = passages[level] || passages[1];
+  let questions = [];
+  
+  pool.forEach(p => {
+    let options = shuffle([p.a, ...p.w]);
+    questions.push({
+      passage: p.text,
+      question: p.q,
+      options: options,
+      correct: options.indexOf(p.a),
+      hint: 'Look back at the passage',
+      explanation: `The passage says: "${p.text}". So "${p.a}" is correct.`
+    });
+  });
+  
+  return shuffle(questions).slice(0, 10);
+}
+
+function getSpellQuestions(level) {
+  const words = {
+    1: ['cat', 'dog', 'sun', 'big', 'run', 'hat', 'map', 'bed', 'fun'],
+    2: ['happy', 'funny', 'sunny', 'puppy', 'candy', 'daisy', 'rainy'],
+    3: ['friend', 'night', 'light', 'chair', 'train', 'cloud', 'bread'],
+    4: ['library', 'dolphin', 'kitchen', 'blanket', 'journey', 'penguin'],
+    5: ['beautiful', 'discover', 'adventure', 'chocolate', 'important', 'celebrate']
+  };
+  
+  let pool = words[level] || words[1];
+  return shuffle(pool).slice(0, 10).map(word => ({
+    word: word,
+    hint: `Spell the word`,
+    explanation: `"${word}" is spelled ${word.split('').join('-')}`
   }));
 }
 
-// ========== STATE – NO LEVEL LOCKS ==========
-const PASS_PCT = 80;
-const CATS = {vocab:{label:"Vocabulary",levels:5}, seq:{label:"Sequencing",levels:5}, comp:{label:"Comprehension",levels:5}, spell:{label:"Spelling",levels:5}};
-
-let progress = {};                // progress[cat][lvl] = {done,score} – only for stars, no unlocking
-let cat="", level=0, questions=[], qi=0, correct=0, wrong=0, mistakes=[];
-let answered=false, hintCount=0;
-let spellTapped=[], spellAnswer="";
-
-function initProgress(){
-  Object.keys(CATS).forEach(c=>{
-    if(!progress[c]) progress[c]={};
-    for(let l=1;l<=CATS[c].levels;l++){
-      if(!progress[c][l]) progress[c][l]={done:false,score:0};
-    }
-  });
+// ==================== SCREEN NAVIGATION ====================
+function showHome() {
+  updateProgressDisplay();
+  showScreen('homeScreen');
 }
 
-// ----- save/load (exactly as before but without unlocked fields) -----
-function saveProgress(){
-  const blob=new Blob([JSON.stringify({v:3,progress},null,2)],{type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="reading-adventure-save.json";
-  a.click();
-  document.getElementById("saveLbl").textContent="✅ Saved!";
-  setTimeout(updateSaveLbl,2000);
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
 }
-function loadProgress(){ document.getElementById("loadFile").click(); }
-function loadFile(e){
-  const file=e.target.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    try{
-      const d=JSON.parse(ev.target.result);
-      if(d && d.v===3 && d.progress){
-        progress = d.progress;
-        initProgress();
-        updateSaveLbl();
-        renderHome();
-        document.getElementById("saveLbl").textContent="✅ Loaded!";
-        setTimeout(updateSaveLbl,2000);
-      } else alert("Invalid save file.");
-    }catch(error){alert("Could not read save file.");}
-  };
-  r.readAsText(file);
-  e.target.value="";
-}
-function updateSaveLbl(){
-  let done=0,total=0;
-  Object.keys(CATS).forEach(c=>{
-    for(let l=1;l<=CATS[c].levels;l++){
+
+function updateProgressDisplay() {
+  let total = 0;
+  let mastered = 0;
+  
+  for (let cat in CATEGORIES) {
+    for (let lvl = 1; lvl <= CATEGORIES[cat].levels; lvl++) {
       total++;
-      if(progress[c] && progress[c][l] && progress[c][l].done) done++;
+      if (progress[cat] && progress[cat][lvl] && progress[cat][lvl].completed) {
+        mastered++;
+      }
     }
-  });
-  document.getElementById("saveLbl").textContent=done?done+"/"+total+" levels mastered":"No saves yet";
-  let chart = document.getElementById("progressChart");
-  if(chart){
-    let pct = Math.round((done/total)*100) || 0;
-    chart.innerHTML = `<h3 style="color:#2D3561;margin-bottom:10px">📊 Your Progress</h3>
-      <div style="margin-bottom:5px">${done} of ${total} levels mastered (${pct}%)</div>
-      <div class="progress-bar-cont"><div class="progress-bar-fill" style="width:${pct}%"></div></div>`;
   }
+  
+  const pct = Math.round((mastered / total) * 100) || 0;
+  document.getElementById('progressStats').innerHTML = `${mastered} of ${total} levels mastered (${pct}%)`;
+  document.getElementById('progressBarFill').style.width = pct + '%';
+  document.getElementById('saveLbl').innerHTML = mastered ? `${mastered}/${total} mastered` : 'No saves yet';
 }
-function showHome(){ renderHome(); updateSaveLbl(); showScreen("homeScreen"); }
-function showScreen(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
 
-// ========== CATEGORY & LEVELS – ALL UNLOCKED ==========
-function openCategory(c){
-  cat=c;
-  document.getElementById("levelsTitle").textContent=CATS[c].label+" — pick any level";
-  const grid=document.getElementById("levelsGrid");
-  grid.innerHTML="";
-  const emojis=["😊","😎","🤩","🏆","👑"];
-  for(let l=1;l<=CATS[c].levels;l++){
-    if(!progress[c][l]) progress[c][l]={done:false,score:0};
-    const p=progress[c][l];
-    const btn=document.createElement("button");
-    btn.className="lv-btn"+(p.done?" done":"");
-    btn.innerHTML='<span class="lv-icon">'+emojis[l-1]+'</span>Level '+l+(p.done?'<div class="lv-score">'+p.score+'%</div>':'');
-    btn.onclick=(function(ll){return function(){startLevel(ll);};})(l);
+// ==================== CATEGORY & LEVELS ====================
+function openCategory(cat) {
+  currentCategory = cat;
+  document.getElementById('levelsTitle').innerHTML = `${CATEGORIES[cat].icon} ${CATEGORIES[cat].name} — pick any level`;
+  
+  const grid = document.getElementById('levelsGrid');
+  grid.innerHTML = '';
+  
+  for (let lvl = 1; lvl <= CATEGORIES[cat].levels; lvl++) {
+    const levelProgress = progress[cat] && progress[cat][lvl] ? progress[cat][lvl] : { completed: false, score: 0 };
+    
+    const btn = document.createElement('div');
+    btn.className = 'lv-btn' + (levelProgress.completed ? ' done' : '');
+    btn.innerHTML = `
+      <span class="lv-icon">${['😊','😎','🤩','🏆','👑'][lvl-1]}</span>
+      Level ${lvl}
+      ${levelProgress.completed ? `<div class="lv-score">${levelProgress.score}%</div>` : ''}
+    `;
+    btn.onclick = () => startLevel(lvl);
     grid.appendChild(btn);
   }
-  showScreen("levelsScreen");
+  
+  showScreen('levelsScreen');
 }
 
-function startLevel(l){
-  level=l; qi=0; correct=0; wrong=0; mistakes=[]; answered=false; hintCount=0;
-  spellTapped=[]; spellAnswer="";
-  // generate fresh questions
-  if(cat==='vocab') questions = vocabBank(Math.min(l,5));
-  else if(cat==='seq') questions = seqBank(Math.min(l,5));
-  else if(cat==='comp') questions = compBank(Math.min(l,5));
-  else if(cat==='spell') questions = spellBank(Math.min(l,5));
-  document.getElementById("quizLabel").textContent=CATS[cat].label+" • Level "+l;
-  document.getElementById("audioBtn").style.display = cat==='spell'?"inline-flex":"none";
-  showScreen("quizScreen");
-  loadQuestion();
+// ==================== START LEVEL ====================
+function startLevel(level) {
+  currentLevel = level;
+  qIndex = 0;
+  score = 0;
+  wrong = 0;
+  mistakes = [];
+  hintsUsed = 0;
+  answered = false;
+  spellAnswer = '';
+  
+  // Generate questions based on category
+  if (currentCategory === 'vocab') questions = getVocabQuestions(level);
+  else if (currentCategory === 'seq') questions = getSeqQuestions(level);
+  else if (currentCategory === 'comp') questions = getCompQuestions(level);
+  else if (currentCategory === 'spell') questions = getSpellQuestions(level);
+  
+  document.getElementById('quizLabel').innerHTML = `${CATEGORIES[currentCategory].icon} ${CATEGORIES[currentCategory].name} • Level ${level}`;
+  document.getElementById('audioBtn').style.display = currentCategory === 'spell' ? 'inline-flex' : 'none';
+  
+  showScreen('quizScreen');
+  renderQuestion();
 }
-function leaveQuiz(){ if(confirm("Leave this level? Progress won't be saved.")) showHome(); }
 
-// ----- rendering & interaction (same as your original, shortened) -----
-function loadQuestion(){
-  answered=false; spellTapped=[]; spellAnswer="";
-  const q=questions[qi];
-  const total=questions.length;
-  document.getElementById("quizQNum").textContent="Q "+(qi+1)+" / "+total;
-  document.getElementById("qsCorrect").textContent=correct;
-  document.getElementById("qsWrong").textContent=wrong;
-  const att=correct+wrong;
-  document.getElementById("qsAcc").textContent=att?Math.round(correct/att*100)+"%":"—";
-  document.getElementById("progFill").style.width=((qi)/total*100)+"%";
-  document.getElementById("feedback").className="feedback";
-  document.getElementById("explanation").className="explanation";
-  document.getElementById("hintBox").className="hint-box";
-  document.getElementById("checkBtn").style.display="inline-flex";
-  document.getElementById("nextBtn").style.display="none";
-  const hintAllowed=qi<4 && hintCount<2 && cat!=="comp";
-  document.getElementById("hintBtn").style.display=hintAllowed?"inline-flex":"none";
-  document.getElementById("hintBtn").disabled=false;
+function leaveQuiz() {
+  if (confirm('Leave this level? Progress won\'t be saved.')) {
+    showHome();
+  }
+}
 
-  if(cat==="vocab") renderVocab(q);
-  else if(cat==="seq") renderSeq(q);
-  else if(cat==="comp") renderComp(q);
-  else if(cat==="spell") renderSpell(q);
+// ==================== RENDER QUESTION ====================
+function renderQuestion() {
+  const q = questions[qIndex];
+  const total = questions.length;
+  
+  document.getElementById('quizQNum').innerHTML = `Q${qIndex+1} / ${total}`;
+  document.getElementById('qsCorrect').innerHTML = score;
+  document.getElementById('qsWrong').innerHTML = wrong;
+  const att = score + wrong;
+  document.getElementById('qsAcc').innerHTML = att ? Math.round((score/att)*100) + '%' : '—';
+  document.getElementById('progFill').style.width = (qIndex / total * 100) + '%';
+  
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('explanation').className = 'explanation';
+  document.getElementById('hintBox').className = 'hint-box';
+  document.getElementById('checkBtn').style.display = 'inline-flex';
+  document.getElementById('nextBtn').style.display = 'none';
+  
+  const hintAllowed = qIndex < 4 && hintsUsed < 2 && currentCategory !== 'comp';
+  document.getElementById('hintBtn').style.display = hintAllowed ? 'inline-flex' : 'none';
+  document.getElementById('hintBtn').disabled = false;
+  
+  answered = false;
+  
+  // Render based on category
+  if (currentCategory === 'vocab') renderVocab(q);
+  else if (currentCategory === 'seq') renderSeq(q);
+  else if (currentCategory === 'comp') renderComp(q);
+  else if (currentCategory === 'spell') renderSpell(q);
 }
-function renderVocab(q){
-  let card=document.getElementById("qCard");
-  card.style.borderTopColor="#00cec9";
-  card.innerHTML=`<div class="q-type-badge">📖 Vocabulary</div><div class="q-word">${q.emoji||""} ${q.word}</div><div class="q-text" style="text-align:center">What does this mean?</div><div class="options two-col" id="opts"></div>`;
-  renderOptions(q,document.getElementById("opts"));
-}
-function renderSeq(q){
-  let card=document.getElementById("qCard");
-  card.style.borderTopColor="#fd79a8";
-  card.innerHTML=`<div class="q-type-badge">📝 What Happens Next?</div><div class="q-story">${q.context}</div><div class="q-text">What happens next?</div><div class="options" id="opts"></div>`;
-  renderOptions(q,document.getElementById("opts"));
-}
-function renderComp(q){
-  let card=document.getElementById("qCard");
-  card.style.borderTopColor="#a29bfe";
-  card.innerHTML=`<div class="q-type-badge">📖 Comprehension</div><div class="q-passage">${q.passage}</div><div class="q-text">${q.question}</div><div class="options two-col" id="opts"></div>`;
-  renderOptions(q,document.getElementById("opts"));
-}
-function renderOptions(q,container){
-  const letters=["A","B","C","D"];
-  container.innerHTML="";
-  q.options.forEach((opt,i)=>{
-    let btn=document.createElement("button");
-    btn.className="opt-btn";
-    btn.innerHTML=`<div class="opt-letter">${letters[i]}</div><div>${opt}</div>`;
-    btn.onclick=function(idx){return function(){selectOption(idx,q,container);};}(i);
+
+function renderVocab(q) {
+  let html = `
+    <div class="q-type-badge">📖 Vocabulary</div>
+    <div class="q-word">${q.word}</div>
+    <div class="q-text" style="text-align:center">What does this mean?</div>
+    <div class="options two-col" id="optionsContainer"></div>
+  `;
+  document.getElementById('qCard').innerHTML = html;
+  
+  const container = document.getElementById('optionsContainer');
+  const letters = ['A', 'B', 'C', 'D'];
+  
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<div class="opt-letter">${letters[i]}</div><div>${opt}</div>`;
+    btn.onclick = () => selectOption(i, q.correct);
     container.appendChild(btn);
   });
 }
-function renderSpell(q){
-  let card=document.getElementById("qCard");
-  card.style.borderTopColor="#fdcb6e";
-  let letters=q.word.split("").sort(()=>Math.random()-0.5);
-  while(letters.length<q.word.length+3) letters.push("aeiou".split("")[Math.floor(Math.random()*5)]);
-  letters.sort(()=>Math.random()-0.5);
-  let blanks="";
-  for(let i=0;i<q.word.length;i++) blanks+=`<div class="spell-blank" id="bl${i}">_</div>`;
-  card.innerHTML=`<div class="q-type-badge">✏️ Spelling</div><div class="spell-hint-img">${q.emoji}</div><div class="q-text" style="text-align:center">${q.hint}</div><div class="spell-blanks" id="spellBlanks">${blanks}</div><div class="letter-bank" id="letterBank"></div><input class="spell-input" id="spellInput" type="text" maxlength="${q.word.length}" placeholder="Type or tap..." oninput="spellTyped(this.value)">`;
-  let bank=document.getElementById("letterBank");
-  letters.forEach((lt,i)=>{
-    let tile=document.createElement("div");
-    tile.className="letter-tile";
-    tile.textContent=lt;
-    tile.dataset.idx=i;
-    tile.onclick=function(l,idx){return function(){tapLetter(l,idx);};}(lt,i);
-    bank.appendChild(tile);
+
+function renderSeq(q) {
+  let html = `
+    <div class="q-type-badge">📝 What Happens Next?</div>
+    <div class="q-story">${q.context}</div>
+    <div class="q-text">What happens next?</div>
+    <div class="options" id="optionsContainer"></div>
+  `;
+  document.getElementById('qCard').innerHTML = html;
+  
+  const container = document.getElementById('optionsContainer');
+  const letters = ['A', 'B', 'C', 'D'];
+  
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<div class="opt-letter">${letters[i]}</div><div>${opt}</div>`;
+    btn.onclick = () => selectOption(i, q.correct);
+    container.appendChild(btn);
   });
-}
-function tapLetter(lt,idx){
-  let q=questions[qi];
-  if(spellTapped.length>=q.word.length) return;
-  let tile=document.querySelector(`.letter-tile[data-idx="${idx}"]`);
-  if(tile.classList.contains("used")) return;
-  spellTapped.push({lt,idx});
-  spellAnswer=spellTapped.map(x=>x.lt).join("");
-  tile.classList.add("used");
-  for(let i=0;i<q.word.length;i++){
-    let bl=document.getElementById("bl"+i);
-    if(bl) bl.textContent=spellTapped[i]?spellTapped[i].lt:"_";
-  }
-  document.getElementById("spellInput").value=spellAnswer;
-}
-function spellTyped(val){
-  let q=questions[qi];
-  spellAnswer=val.toLowerCase().trim();
-  for(let i=0;i<q.word.length;i++){
-    let bl=document.getElementById("bl"+i);
-    if(bl) bl.textContent=val[i]||"_";
-  }
-}
-function selectOption(i,q,container){
-  if(answered) return;
-  answered=true;
-  let isCorrect=i===q.correct;
-  if(isCorrect) correct++; else {wrong++; mistakes.push({q:q.word||q.context||q.question||"question",exp:q.explanation||""});}
-  container.querySelectorAll(".opt-btn").forEach((b,idx)=>{
-    b.disabled=true;
-    if(idx===q.correct) b.classList.add("correct");
-    else if(idx===i && !isCorrect) b.classList.add("wrong");
-  });
-  showFeedback(isCorrect,q.explanation);
-}
-function checkAnswer(){
-  if(answered) return;
-  let q=questions[qi];
-  if(cat==="spell"){
-    let ans=spellAnswer.toLowerCase().trim();
-    let isCorrect=ans===q.word;
-    answered=true;
-    if(isCorrect) correct++; else {wrong++; mistakes.push({q:`Spell "${q.word}"`,exp:`Correct: ${q.word}`});}
-    showFeedback(isCorrect,isCorrect?"✅ Perfect!":`❌ The correct spelling is "${q.word}"`);
-  }
-}
-function showFeedback(isCorrect,msg){
-  let fb=document.getElementById("feedback");
-  fb.textContent=(isCorrect?"✅ Correct! ":"❌ Not quite — ")+(msg||"");
-  fb.className="feedback show "+(isCorrect?"ok":"bad");
-  if(!isCorrect&&questions[qi].explanation&&cat!=="spell"){
-    let ex=document.getElementById("explanation");
-    ex.textContent="💡 "+questions[qi].explanation;
-    ex.className="explanation show";
-  }
-  document.getElementById("checkBtn").style.display="none";
-  document.getElementById("nextBtn").style.display="inline-flex";
-  document.getElementById("hintBtn").style.display="none";
-  document.getElementById("qsCorrect").textContent=correct;
-  document.getElementById("qsWrong").textContent=wrong;
-  let att=correct+wrong;
-  document.getElementById("qsAcc").textContent=att?Math.round(correct/att*100)+"%":"—";
-}
-function showHint(){
-  if(!questions[qi].hint) return;
-  hintCount++;
-  document.getElementById("hintBox").textContent="💡 Hint: "+questions[qi].hint;
-  document.getElementById("hintBox").classList.add("show");
-  document.getElementById("hintBtn").disabled=true;
-}
-function nextQuestion(){
-  qi++;
-  if(qi>=questions.length) showResult();
-  else loadQuestion();
-}
-function playAudio(){
-  let q=questions[qi];
-  if(q && q.word){
-    let u=new SpeechSynthesisUtterance(q.word);
-    u.rate=0.8; u.pitch=1.2;
-    window.speechSynthesis.speak(u);
-  }
-}
-function showResult(){
-  let total=questions.length;
-  let pct=Math.round((correct/total)*100);
-  let passed=pct>=PASS_PCT;
-  if(passed){
-    progress[cat][level].done=true;
-    if(pct>progress[cat][level].score) progress[cat][level].score=pct;
-  }
-  updateSaveLbl();
-  document.getElementById("resEmoji").textContent=passed?(pct===100?"🏆":"🌟"):"💪";
-  document.getElementById("resTitle").textContent=passed?"You Passed!":"Keep Practicing!";
-  document.getElementById("resPct").textContent=pct+"%";
-  document.getElementById("resStars").textContent=pct>=90?"⭐⭐⭐":pct>=70?"⭐⭐":"⭐";
-  document.getElementById("resMsg").innerHTML=passed
-    ?`Great! You got ${correct}/${total}.`
-    :`You got ${correct}/${total}. Need ${PASS_PCT}% to mark as mastered.`;
-  let ms=document.getElementById("mistakeSection");
-  if(mistakes.length){
-    ms.innerHTML='<div class="mistake-title">📝 Review:</div>'+mistakes.map(m=>
-      `<div class="mistake-item"><div class="mi-q">${m.q}</div>${m.exp?`<div class="mi-how">${m.exp}</div>`:''}</div>`
-    ).join("");
-  } else ms.innerHTML="";
-  document.getElementById("retryBtn").onclick=function(){startLevel(level);};
-  let nb=document.getElementById("nextLvBtn");
-  if(level<CATS[cat].levels){
-    nb.style.display="inline-flex";
-    nb.onclick=function(){startLevel(level+1);};
-  } else nb.style.display="none";
-  showScreen("resultScreen");
-}
-function renderHome(){
-  // nothing special – all levels remain visible
 }
 
-// ========== INIT ==========
-(function init(){
-  try{ let raw=localStorage.getItem("readingAdv_v3"); if(raw){let d=JSON.parse(raw); if(d.v===3&&d.progress) progress=d.progress;} }catch(e){}
-  initProgress();
-  renderHome();
-  updateSaveLbl();
-})();
+function renderComp(q) {
+  let html = `
+    <div class="q-type-badge">📖 Comprehension</div>
+    <div class="q-passage">${q.passage}</div>
+    <div class="q-text">${q.question}</div>
+    <div class="options two-col" id="optionsContainer"></div>
+  `;
+  document.getElementById('qCard').innerHTML = html;
+  
+  const container = document.getElementById('optionsContainer');
+  const letters = ['A', 'B', 'C', 'D'];
+  
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<div class="opt-letter">${letters[i]}</div><div>${opt}</div>`;
+    btn.onclick = () => selectOption(i, q.correct);
+    container.appendChild(btn);
+  });
+}
+
+function renderSpell(q) {
+  let letters = q.word.split('').sort(() => Math.random() - 0.5);
+  while (letters.length < q.word.length + 3) {
+    letters.push('aeiou'[Math.floor(Math.random() * 5)]);
+  }
+  letters = shuffle(letters);
+  spellTiles = letters;
+  
+  let blanks = '';
+  for (let i = 0; i < q.word.length; i++) {
+    blanks += `<div class="spell-blank" id="spellBlank${i}">_</div>`;
+  }
+  
+  let tiles = '';
+  letters.forEach((l, i) => {
+    tiles += `<div class="letter-tile" data-letter="${l}" data-index="${i}" onclick="tapLetter('${l}', ${i})">${l}</div>`;
+  });
+  
+  let html = `
+    <div class="q-type-badge">✏️ Spelling</div>
+    <div class="q-text" style="text-align:center">${q.hint}</div>
+    <div class="spell-blanks">${blanks}</div>
+    <div class="letter-bank">${tiles}</div>
+    <input class="spell-input" id="spellInput" type="text" maxlength="${q.word.length}" placeholder="Type or tap letters..." oninput="spellTyped(this.value)">
+  `;
+  document.getElementById('qCard').innerHTML = html;
+  spellAnswer = '';
+}
+
+// ==================== ANSWER HANDLING ====================
+function selectOption(selected, correct) {
+  if (answered) return;
+  answered = true;
+  
+  const isCorrect = selected === correct;
+  
+  if (isCorrect) {
+    score++;
+  } else {
+    wrong++;
+    mistakes.push({
+      q: questions[qIndex].word || questions[qIndex].context || questions[qIndex].question || 'Question',
+      exp: questions[qIndex].explanation || ''
+    });
+  }
+  
+  // Highlight buttons
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correct) btn.classList.add('correct');
+    else if (i === selected && !isCorrect) btn.classList.add('wrong');
+  });
+  
+  showFeedback(isCorrect, questions[qIndex].explanation);
+}
+
+function checkAnswer() {
+  if (answered) return;
+  
+  const q = questions[qIndex];
+  if (currentCategory === 'spell') {
+    const input = document.getElementById('spellInput');
+    const answer = input ? input.value.toLowerCase().trim() : spellAnswer.toLowerCase();
+    const isCorrect = answer === q.word;
+    
+    answered = true;
+    
+    if (isCorrect) {
+      score++;
+    } else {
+      wrong++;
+      mistakes.push({
+        q: `Spell "${q.word}"`,
+        exp: `Correct spelling: "${q.word}"`
+      });
+    }
+    
+    showFeedback(isCorrect, isCorrect ? '✅ Perfect!' : `❌ Correct spelling: "${q.word}"`);
+  }
+}
+
+function showFeedback(isCorrect, explanation) {
+  const fb = document.getElementById('feedback');
+  fb.innerHTML = isCorrect ? '✅ Correct!' : `❌ Not quite. ${explanation || ''}`;
+  fb.className = `feedback show ${isCorrect ? 'ok' : 'bad'}`;
+  
+  if (!isCorrect && explanation && currentCategory !== 'spell') {
+    const ex = document.getElementById('explanation');
+    ex.innerHTML = `💡 ${explanation}`;
+    ex.className = 'explanation show';
+  }
+  
+  document.getElementById('checkBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'inline-flex';
+  document.getElementById('hintBtn').style.display = 'none';
+  
+  document.getElementById('qsCorrect').innerHTML = score;
+  document.getElementById('qsWrong').innerHTML = wrong;
+  const att = score + wrong;
+  document.getElementById('qsAcc').innerHTML = att ? Math.round((score/att)*100) + '%' : '—';
+}
+
+// ==================== SPELLING HELPERS ====================
+function tapLetter(letter, index) {
+  if (answered) return;
+  
+  const q = questions[qIndex];
+  const currentLength = spellAnswer.length;
+  if (currentLength >= q.word.length) return;
+  
+  const tile = document.querySelector(`.letter-tile[data-index="${index}"]`);
+  if (tile.classList.contains('used')) return;
+  
+  tile.classList.add('used');
+  spellAnswer += letter;
+  
+  document.getElementById(`spellBlank${currentLength}`).innerHTML = letter;
+  document.getElementById('spellInput').value = spellAnswer;
+}
+
+function spellTyped(val) {
+  if (answered) return;
+  
+  const q = questions[qIndex];
+  spellAnswer = val.toLowerCase();
+  
+  // Reset all tiles
+  document.querySelectorAll('.letter-tile').forEach(t => t.classList.remove('used'));
+  
+  // Fill blanks
+  for (let i = 0; i < q.word.length; i++) {
+    const blank = document.getElementById(`spellBlank${i}`);
+    if (blank) {
+      blank.innerHTML = val[i] || '_';
+    }
+  }
+}
+
+// ==================== HINT ====================
+function showHint() {
+  if (!questions[qIndex] || questions[qIndex].hint) {
+    hintsUsed++;
+    document.getElementById('hintBox').innerHTML = `💡 Hint: ${questions[qIndex].hint}`;
+    document.getElementById('hintBox').classList.add('show');
+    document.getElementById('hintBtn').disabled = true;
+  }
+}
+
+// ==================== AUDIO ====================
+function playAudio() {
+  if (currentCategory === 'spell' && questions[qIndex] && questions[qIndex].word) {
+    const utterance = new SpeechSynthesisUtterance(questions[qIndex].word);
+    utterance.rate = 0.8;
+    utterance.pitch = 1.2;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+// ==================== NEXT QUESTION ====================
+function nextQuestion() {
+  qIndex++;
+  if (qIndex >= questions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ==================== SHOW RESULTS ====================
+function showResults() {
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  const passed = pct >= PASS_PCT;
+  
+  if (passed) {
+    if (!progress[currentCategory]) progress[currentCategory] = {};
+    if (!progress[currentCategory][currentLevel]) progress[currentCategory][currentLevel] = {};
+    progress[currentCategory][currentLevel].completed = true;
+    progress[currentCategory][currentLevel].score = pct;
+  }
+  
+  document.getElementById('resEmoji').innerHTML = pct >= 90 ? '🏆' : pct >= 70 ? '🌟' : '💪';
+  document.getElementById('resTitle').innerHTML = pct >= 90 ? 'Amazing!' : pct >= 70 ? 'Good job!' : 'Keep practicing!';
+  document.getElementById('resPct').innerHTML = pct + '%';
+  document.getElementById('resStars').innerHTML = pct >= 90 ? '⭐⭐⭐' : pct >= 70 ? '⭐⭐' : '⭐';
+  document.getElementById('resMsg').innerHTML = passed 
+    ? `Great! You got ${score} out of ${total} correct.` 
+    : `You got ${score} out of ${total}. Need ${PASS_PCT}% to master.`;
+  
+  // Show mistakes
+  let mistakesHtml = '';
+  if (mistakes.length > 0) {
+    mistakesHtml = '<div class="mistake-title">📝 Review mistakes:</div>';
+    mistakes.forEach(m => {
+      mistakesHtml += `
+        <div class="mistake-item">
+          <div class="mi-q">${m.q}</div>
+          ${m.exp ? `<div class="mi-how">${m.exp}</div>` : ''}
+        </div>
+      `;
+    });
+  }
+  document.getElementById('mistakeSection').innerHTML = mistakesHtml;
+  
+  document.getElementById('retryBtn').onclick = () => startLevel(currentLevel);
+  
+  // Next level button
+  if (passed && currentLevel < CATEGORIES[currentCategory].levels) {
+    document.getElementById('nextLvBtn').style.display = 'inline-flex';
+    document.getElementById('nextLvBtn').onclick = () => startLevel(currentLevel + 1);
+  } else {
+    document.getElementById('nextLvBtn').style.display = 'none';
+  }
+  
+  updateProgressDisplay();
+  showScreen('resultScreen');
+}
+
+// ==================== SAVE/LOAD ====================
+function saveProgress() {
+  const data = JSON.stringify({ version: 1, progress: progress }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'reading-adventure-save.json';
+  a.click();
+  alert('Progress saved!');
+}
+
+function loadProgress() {
+  document.getElementById('loadFile').click();
+}
+
+function loadFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data && data.version === 1 && data.progress) {
+        progress = data.progress;
+        initProgress();
+        updateProgressDisplay();
+        alert('Progress loaded!');
+      } else {
+        alert('Invalid save file');
+      }
+    } catch (err) {
+      alert('Error loading file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ==================== INITIALIZE ====================
+updateProgressDisplay();
 </script>
 </body>
 </html>
